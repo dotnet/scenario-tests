@@ -71,7 +71,7 @@ stages:
         steps:
         - checkout: self
           clean: true
-        - script: eng\cibuild.cmd -configuration $(_BuildConfig) -prepareMachine $(_BuildArgs)
+        - script: eng\common\cibuild.cmd -configuration $(_BuildConfig) -prepareMachine $(_BuildArgs)
           displayName: Build and Test
 
         # Archive NuGet packages to DevOps (workaround for https://github.com/dotnet/arcade/issues/4444)
@@ -92,15 +92,13 @@ stages:
               Debug:
                 _BuildConfig: Debug
                 _SignType: none
-                _DotNetPublishToBlobFeed : false
               Release:
                 _BuildConfig: Release
                 _SignType: none
-                _DotNetPublishToBlobFeed : false
           steps:
           - checkout: self
             clean: true
-          - script: eng/cibuild.sh --configuration $(_BuildConfig) --prepareMachine
+          - script: eng/common/cibuild.sh --configuration $(_BuildConfig) --prepareMachine
             displayName: Build and Test
 
         - job: Linux
@@ -120,7 +118,7 @@ stages:
           steps:
           - checkout: self
             clean: true
-          - script: eng/cibuild.sh --configuration $(_BuildConfig) --prepareMachine
+          - script: eng/common/cibuild.sh --configuration $(_BuildConfig) --prepareMachine
             displayName: Build and Test
 
 - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
