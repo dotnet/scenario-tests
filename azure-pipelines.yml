@@ -62,7 +62,7 @@ stages:
               ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
                 _SignType: test
                 _BuildArgs: ''
-              ${{ if and(ne(t['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
+              ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
                 _SignType: test
                 _BuildArgs: $(_OfficialBuildArgs)
         steps:
