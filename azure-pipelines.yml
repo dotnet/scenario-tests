@@ -42,9 +42,7 @@ stages:
           # Publish-Build-Assets provides: MaestroAccessToken, BotAccount-dotnet-maestro-bot-PAT
           - group: Publish-Build-Assets
           - name: _OfficialBuildArgs
-            value: /p:DotNetSignType=$(_SignType)
-                  /p:TeamName=$(_TeamName)
-                  /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
+            value: /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
         # else
         - ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
           - name: _OfficialBuildArgs
@@ -54,16 +52,13 @@ stages:
             ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
               Debug:
                 _BuildConfig: Debug
-                _SignType: test
                 _BuildArgs: ''
             Release:
               _BuildConfig: Release
               # PRs or external builds are not signed.
               ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
-                _SignType: test
                 _BuildArgs: ''
               ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-                _SignType: test
                 _BuildArgs: $(_OfficialBuildArgs)
         steps:
         - checkout: self
@@ -88,10 +83,8 @@ stages:
             matrix:
               Debug:
                 _BuildConfig: Debug
-                _SignType: none
               Release:
                 _BuildConfig: Release
-                _SignType: none
           steps:
           - checkout: self
             clean: true
@@ -106,12 +99,8 @@ stages:
             matrix:
               Debug:
                 _BuildConfig: Debug
-                _SignType: none
-                _DotNetPublishToBlobFeed : false
               Release:
                 _BuildConfig: Release
-                _SignType: none
-                _DotNetPublishToBlobFeed : false
           steps:
           - checkout: self
             clean: true
