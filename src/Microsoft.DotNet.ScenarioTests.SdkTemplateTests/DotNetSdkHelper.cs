@@ -93,11 +93,13 @@ internal class DotNetSdkHelper
         {
             options += $" --language \"{language}\"";
         }
-        if (string.IsNullOrEmpty(customArgs))
+        if (!string.IsNullOrEmpty(customArgs))
         {
             options += $" {customArgs}";
         }
 
+        //temporary console writeline to keep track of where tests are
+        Console.WriteLine($"new {projectType} {options}", projectDirectory);
         ExecuteCmd($"new {projectType} {options}", projectDirectory);
 
         return projectDirectory;
@@ -160,6 +162,22 @@ internal class DotNetSdkHelper
         }
     }
 
+    //v-masche notes. in progress. want to do similar to the run web method above. however I need to either
+    //find a decent output that happens when the app is running or add one myself.
+    /*
+    public void ExecuteRunWinForm(string projectDirectory)
+    {
+        ExecuteCmd(
+            $"run {GetBinLogOption(projectDirectory, "run")}",
+            projectDirectory,
+            additionalProcessConfigCallback: processConfigCallback,
+            millisecondTimeout: 30000);
+        void processConfigCallback(Process process)
+        {
+            if process.
+        }
+    }*/
+
     public void ExecuteTest(string projectDirectory) =>
         ExecuteCmd($"test {GetBinLogOption(projectDirectory, "test")}", workingDirectory: projectDirectory);
 
@@ -172,5 +190,12 @@ internal class DotNetSdkHelper
         }
 
         return $"/bl:{Path.Combine(projectDirectory, $"{fileName}.binlog")}";
+    }
+
+    public void ExecuteAddClassReference(string projectDirectory)
+    {
+        //Very hacky fix to grab class library path assuming Console referencing Classlib
+        string classDirectory = projectDirectory.Replace("Console", "ClassLib");
+        ExecuteCmd($"add reference {classDirectory}", projectDirectory);
     }
 }
