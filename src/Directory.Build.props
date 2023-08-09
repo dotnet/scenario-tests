@@ -13,6 +13,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <UseAppHost>true</UseAppHost>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
