@@ -4,6 +4,11 @@
 
   <!-- Override the test target to run the test harness as a separate executable against dotnet SDK used to run these tests. -->
   <Target Name="Test">
-    <Exec Command="$(DotNetTool) $(TargetPath) --dotnet-root $(DotNetRoot) --sdk-version $(NETCoreSdkVersion)" />
+    <PropertyGroup>
+      <!-- Dotnet root typically ends in a \. Trim this to avoid issues with Exec -->
+      <TestArgs>--dotnet-root "$(DotNetRoot.TrimEnd('\'))"</TestArgs>
+      <TestArgs>$(TestArgs) --sdk-version $(NETCoreSdkVersion)</TestArgs>
+    </PropertyGroup>
+    <Exec Command='"$(DotNetTool)" "$(TargetPath)" $(TestArgs)' />
   </Target>
 </Project>
