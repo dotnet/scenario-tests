@@ -92,7 +92,7 @@ namespace ScenarioTests
 
             rootCommand.SetAction((ParseResult parseResult) =>
             {
-                Invoke(parseResult.GetValue(dotnetRootOption)!,
+                return Invoke(parseResult.GetValue(dotnetRootOption)!,
                        parseResult.GetValue(testRootOption)!,
                        parseResult.GetValue(sdkVersionOption),
                        parseResult.GetValue(targetRidOption)!,
