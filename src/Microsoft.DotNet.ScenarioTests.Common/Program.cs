@@ -92,10 +92,10 @@ namespace ScenarioTests
 
             rootCommand.SetAction((ParseResult parseResult) =>
             {
-                return Invoke(parseResult.GetValue(dotnetRootOption)! ?? throw new ArgumentException("Expected dotnetRootOption to have a value"),
-                       parseResult.GetValue(testRootOption)! ?? throw new ArgumentException("Expected testRootOption to have a value"),
+                return Invoke(parseResult.GetValue(dotnetRootOption)!,
+                       parseResult.GetValue(testRootOption)!,
                        parseResult.GetValue(sdkVersionOption),
-                       parseResult.GetValue(targetRidOption)! ?? throw new ArgumentException("Expected targetRidOption to have a value"),
+                       parseResult.GetValue(targetRidOption)!,
                        parseResult.GetValue(listTestsOption),
                        parseResult.GetValue(offlineOnlyOption),
                        parseResult.GetValue(noTraitsOption) ?? (IList<string>)ImmutableList<string>.Empty,
