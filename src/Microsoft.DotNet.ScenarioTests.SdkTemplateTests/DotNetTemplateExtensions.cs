@@ -17,4 +17,9 @@ public static class DotNetTemplateExtensions
         || template == DotNetSdkTemplate.BlazorServer
         || template == DotNetSdkTemplate.Worker
         || template == DotNetSdkTemplate.Angular;
+
+    public static bool isUIApp(this DotNetSdkTemplate template) =>
+        template == DotNetSdkTemplate.Wpf
+        || template == DotNetSdkTemplate.Winforms
+        || template == DotNetSdkTemplate.WebApp;
 }

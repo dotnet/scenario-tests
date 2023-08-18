@@ -24,7 +24,6 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
     
     [Theory]
     [MemberData(nameof(GetLanguages))]
-    [Trait("Category", "Offline")]
     public void VerifyConsoleTemplate(DotNetLanguage language)
     {
         var newTest = new SdkTemplateTest(
@@ -32,9 +31,21 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
             DotNetSdkActions.Build | DotNetSdkActions.Run | DotNetSdkActions.PublishComplex | DotNetSdkActions.PublishR2R);
         newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
     }
-    
+
     [Theory]
     [MemberData(nameof(GetLanguages))]
+    [Trait("Category", "Offline")]
+    public void VerifyOfflineConsoleTemplate(DotNetLanguage language)
+    {
+        var newTest = new SdkTemplateTest(
+            nameof(SdkTemplateTests) + "Offline", language, _scenarioTestInput.TargetRid, DotNetSdkTemplate.Console,
+            DotNetSdkActions.Build | DotNetSdkActions.Run | DotNetSdkActions.Publish);
+        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
+    }
+
+    [Theory]
+    [MemberData(nameof(GetLanguages))]
+    [Trait("Category", "Offline")]
     public void VerifyClasslibTemplate(DotNetLanguage language)
     {
         var newTest = new SdkTemplateTest(
@@ -75,57 +86,43 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
     
     [Theory]
     [InlineData(DotNetLanguage.CSharp)]
-    public void VerifyCSharpWPFTemplate(DotNetLanguage language)
+    [InlineData(DotNetLanguage.VB)]
+    [Trait("Category", "Offline")]
+    public void VerifyWPFTemplate(DotNetLanguage language)
     {
         var newTest = new SdkTemplateTest(
             nameof(SdkTemplateTest), language, _scenarioTestInput.TargetRid, DotNetSdkTemplate.Wpf,
-            DotNetSdkActions.Test | DotNetSdkActions.Publish);
+            DotNetSdkActions.Test | DotNetSdkActions.Run | DotNetSdkActions.Publish);
         newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
     }
     
+    [Fact]
+    [Trait("Category", "Offline")]
+    public void VerifyWebAppTemplate()
+    {
+        var newTest = new SdkTemplateTest(
+            nameof(SdkTemplateTest), DotNetLanguage.CSharp, _scenarioTestInput.TargetRid, DotNetSdkTemplate.WebApp,
+            DotNetSdkActions.Test | DotNetSdkActions.Run | DotNetSdkActions.Publish);
+        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
+    }
+    
+    
     [Theory]
+    [InlineData(DotNetLanguage.CSharp)]
     [InlineData(DotNetLanguage.VB)]
-    public void VerifyVBWPFTemplate(DotNetLanguage language)
-    {
-        var newTest = new SdkTemplateTest(
-            nameof(SdkTemplateTest), language, _scenarioTestInput.TargetRid, DotNetSdkTemplate.Wpf,
-            DotNetSdkActions.Test | DotNetSdkActions.Publish);
-        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
-    }
-    
-    [Theory]
-    [InlineData(DotNetLanguage.CSharp)]
-    public void VerifyWebAppTemplate(DotNetLanguage language)
-    {
-        var newTest = new SdkTemplateTest(
-            nameof(SdkTemplateTest), language, _scenarioTestInput.TargetRid, DotNetSdkTemplate.WebApp,
-            DotNetSdkActions.Test | DotNetSdkActions.PublishComplex);
-        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
-    }
-    
-    
-    [Theory]
-    [InlineData(DotNetLanguage.CSharp)]
-    public void VerifyCSharpWinformsTemplate(DotNetLanguage language)
+    [Trait("Category", "Offline")]
+    public void VerifyWinformsTemplate(DotNetLanguage language)
     {
         var newTest = new SdkTemplateTest(
             nameof(SdkTemplateTest), language, _scenarioTestInput.TargetRid, DotNetSdkTemplate.Winforms,
-            DotNetSdkActions.Test | DotNetSdkActions.Publish);
-        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
-    }
-    
-    [Theory]
-    [InlineData(DotNetLanguage.VB)]
-    public void VerifyVBWinformsTemplate(DotNetLanguage language)
-    {
-        var newTest = new SdkTemplateTest(
-            nameof(SdkTemplateTest), language, _scenarioTestInput.TargetRid, DotNetSdkTemplate.Winforms,
-            DotNetSdkActions.Test | DotNetSdkActions.Publish);
+            DotNetSdkActions.Test | DotNetSdkActions.Run | DotNetSdkActions.Publish);
         newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
     }
     
     [Theory]
     [InlineData(DotNetLanguage.CSharp)]
+    [InlineData(DotNetLanguage.VB)]
+    [Trait("Category", "Offline")]
     public void VerifyReferenceInConsoleTemplate(DotNetLanguage language)
     {
         var referenceTest = new SdkTemplateTest(
@@ -140,44 +137,33 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
     }
     
     [Theory]
-    [MemberData(nameof(GetLanguages))]
-    public void VerifyNET6InConsoleTemplate(DotNetLanguage language)
+    [MemberData(nameof(GetAllLanguagesWithDownlevelFrameworks))]
+    [Trait("Category", "Downlevel")]
+    public void VerifyDownlevelFrameworksInConsoleTemplate(DotNetLanguage language, string frameworks)
     {
         var newTest = new SdkTemplateTest(
             nameof(SdkTemplateTests), language, _scenarioTestInput.TargetRid, DotNetSdkTemplate.Console,
             DotNetSdkActions.Build | DotNetSdkActions.Run | DotNetSdkActions.PublishComplex | DotNetSdkActions.PublishR2R);
-        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot, framework: "-f net6.0");
+        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot, framework: "-f " + frameworks);
     }
 
     [Theory]
-    [MemberData(nameof(GetLanguages))]
-    public void VerifyNET7InConsoleTemplate(DotNetLanguage language)
+    [InlineData("net6.0")]
+    [InlineData("net7.0")]
+    [Trait("Category", "Downlevel")]
+    public void VerifyDownLevelFrameworksInWebAppTemplate(string frameworks)
     {
         var newTest = new SdkTemplateTest(
-            nameof(SdkTemplateTests), language, _scenarioTestInput.TargetRid, DotNetSdkTemplate.Console,
-            DotNetSdkActions.Build | DotNetSdkActions.Run | DotNetSdkActions.PublishComplex | DotNetSdkActions.PublishR2R);
-        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot, framework: "-f net7.0");
-    }
-
-    [Theory]
-    [InlineData(DotNetLanguage.CSharp)]
-    public void VerifyNET6InWebAppTemplate(DotNetLanguage language)
-    {
-        var newTest = new SdkTemplateTest(
-            nameof(SdkTemplateTest), language, _scenarioTestInput.TargetRid, DotNetSdkTemplate.WebApp,
-            DotNetSdkActions.Test | DotNetSdkActions.PublishComplex);
-        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot, framework: "-f net6.0");
-    }
-    
-    [Theory]
-    [InlineData(DotNetLanguage.CSharp)]
-    public void VerifyNET7InWebAppTemplate(DotNetLanguage language)
-    {
-        var newTest = new SdkTemplateTest(
-            nameof(SdkTemplateTest), language, _scenarioTestInput.TargetRid, DotNetSdkTemplate.WebApp,
-            DotNetSdkActions.Test | DotNetSdkActions.PublishComplex);
-        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot, framework: "-f net7.0");
+            nameof(SdkTemplateTest), DotNetLanguage.CSharp, _scenarioTestInput.TargetRid, DotNetSdkTemplate.WebApp,
+            DotNetSdkActions.Test | DotNetSdkActions.Run | DotNetSdkActions.PublishComplex);
+        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot, framework: "-f " + frameworks);
     }
     
     private static IEnumerable<object[]> GetLanguages() => Enum.GetValues<DotNetLanguage>().Select(lang => new object[] { lang });
+
+    private static string[] AllDownLevelFrameworks = new string[] { "net6.0", "net7.0" };
+
+    private static IEnumerable<object[]> GetAllLanguagesWithDownlevelFrameworks() 
+        => Enum.GetValues<DotNetLanguage>().
+        SelectMany(lang => AllDownLevelFrameworks.Select(tfm => new object[] { lang, tfm }));
 }

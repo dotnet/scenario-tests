@@ -98,8 +98,6 @@ internal class DotNetSdkHelper
             options += $" {customArgs}";
         }
 
-        //temporary console writeline to keep track of where tests are
-        Console.WriteLine($"new {projectType} {options}", projectDirectory);
         ExecuteCmd($"new {projectType} {options}", projectDirectory);
 
         return projectDirectory;
@@ -109,7 +107,7 @@ internal class DotNetSdkHelper
     {
         string options = string.Empty;
         string binlogDifferentiator = string.Empty;
-
+        
         if (selfContained.HasValue)
         {
             options += $"--self-contained {selfContained.Value.ToString().ToLowerInvariant()}";
@@ -162,21 +160,40 @@ internal class DotNetSdkHelper
         }
     }
 
-    //v-masche notes. in progress. want to do similar to the run web method above. however I need to either
-    //find a decent output that happens when the app is running or add one myself.
-    /*
-    public void ExecuteRunWinForm(string projectDirectory)
+    public void ExecuteRunUIApp(string projectDirectory)
     {
         ExecuteCmd(
             $"run {GetBinLogOption(projectDirectory, "run")}",
             projectDirectory,
             additionalProcessConfigCallback: processConfigCallback,
             millisecondTimeout: 30000);
-        void processConfigCallback(Process process)
+
+        [DllImport("Kernel32.dll")]
+        static extern bool TerminateProcess(IntPtr process, uint uExit);
+        async void processConfigCallback(Process process)
         {
-            if process.
+            await Task.Delay(5000);
+            while (!checkProcess(projectDirectory, process))
+            {
+                await Task.Delay(5000);
+            }
+            TerminateProcess(process.Handle, 0);
+            process.WaitForExit();
         }
-    }*/
+
+        bool checkProcess(string projectDirectory, Process process)
+        {
+            try
+            {
+                Process.GetProcessById(process.Id);
+                return true;
+            }
+            catch (InvalidOperationException)
+            {
+                return false;
+            }
+        }
+    }
 
     public void ExecuteTest(string projectDirectory) =>
         ExecuteCmd($"test {GetBinLogOption(projectDirectory, "test")}", workingDirectory: projectDirectory);

@@ -53,6 +53,10 @@ public class SdkTemplateTest
             {
                 dotNetHelper.ExecuteRunWeb(projectDirectory);
             }
+            else if (Template.isUIApp())
+            {
+                dotNetHelper.ExecuteRunUIApp(projectDirectory);
+            }
             else
             {
                 dotNetHelper.ExecuteRun(projectDirectory);
@@ -64,7 +68,7 @@ public class SdkTemplateTest
         }
         if (Commands.HasFlag(DotNetSdkActions.PublishComplex))
         {
-            dotNetHelper.ExecutePublish(projectDirectory, selfContained: false);
+            dotNetHelper.ExecutePublish(projectDirectory, selfContained: false);        
             dotNetHelper.ExecutePublish(projectDirectory, selfContained: true, TargetRid);
             dotNetHelper.ExecutePublish(projectDirectory, selfContained: true, $"linux-{TargetArchitecture}");
         }

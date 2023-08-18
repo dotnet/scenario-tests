@@ -7,8 +7,6 @@ using System.Xml.Linq;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Sdk;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Collections.Immutable;
 
@@ -229,7 +227,7 @@ namespace ScenarioTests
             }
 
             Dictionary<string, List<string>> includedTraitsMap = ParseTraitKeyValuePairs(includedTraits);
-            foreach (KeyValuePair<string, List<string>> kvp in excludedTraitsMap)
+            foreach (KeyValuePair<string, List<string>> kvp in includedTraitsMap)
             {
                 filters.IncludedTraits.Add(kvp.Key, kvp.Value);
             }
@@ -243,14 +241,13 @@ namespace ScenarioTests
             Dictionary<string, List<string>> excludedTraitsMap = new Dictionary<string, List<string>>();
             for (int i = 0; i < excludedTraits.Count(); i++)
             {
-                var traitKeyValue = excludedTraits[i + 1].Split("=", StringSplitOptions.TrimEntries);
+                var traitKeyValue = excludedTraits[i].Split("=", StringSplitOptions.TrimEntries);
                 if (!excludedTraitsMap.TryGetValue(traitKeyValue[0], out List<string>? values))
                 {
                     excludedTraitsMap.Add(traitKeyValue[0], values = new List<string>());
                 }
                 values.Add(traitKeyValue[1]);
             }
-
             return excludedTraitsMap;
         }
     }
