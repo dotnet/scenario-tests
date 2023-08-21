@@ -21,9 +21,7 @@ stages:
   - template: /eng/common/templates/jobs/jobs.yml
     parameters:
       enableMicrobuild: true
-      enablePublishBuildArtifacts: true
       enablePublishTestResults: true
-      enablePublishBuildAssets: true
       enablePublishUsingPipelines: true
       enableTelemetry: true
       enableSourceBuild: true
@@ -59,7 +57,7 @@ stages:
               ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
                 _BuildArgs: ''
               ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-                _BuildArgs: $(_OfficialBuildArgs)
+                _BuildArgs: $(_OfficialBuildArgs) /p:DotNetPublishUsingPipelines=true
         steps:
         - checkout: self
           clean: true
