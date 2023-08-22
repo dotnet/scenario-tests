@@ -27,7 +27,7 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
     public void VerifyConsoleTemplateComplex(DotNetLanguage language)
     {
         var newTest = new SdkTemplateTest(
-            nameof(SdkTemplateTests), language, _scenarioTestInput.TargetRid, DotNetSdkTemplate.Console,
+            nameof(SdkTemplateTests) + "Complex", language, _scenarioTestInput.TargetRid, DotNetSdkTemplate.Console,
             DotNetSdkActions.Build | DotNetSdkActions.Run | DotNetSdkActions.PublishComplex | DotNetSdkActions.PublishR2R);
         newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
     }
@@ -38,7 +38,7 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
     public void VerifyConsoleTemplate(DotNetLanguage language)
     {
         var newTest = new SdkTemplateTest(
-            nameof(SdkTemplateTests) + "Offline", language, _scenarioTestInput.TargetRid, DotNetSdkTemplate.Console,
+            nameof(SdkTemplateTests), language, _scenarioTestInput.TargetRid, DotNetSdkTemplate.Console,
             DotNetSdkActions.Build | DotNetSdkActions.Run | DotNetSdkActions.Publish);
         newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
     }
