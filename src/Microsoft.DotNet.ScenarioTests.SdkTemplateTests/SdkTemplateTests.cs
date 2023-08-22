@@ -24,7 +24,7 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
     
     [Theory]
     [MemberData(nameof(GetLanguages))]
-    public void VerifyConsoleTemplate(DotNetLanguage language)
+    public void VerifyConsoleTemplateComplex(DotNetLanguage language)
     {
         var newTest = new SdkTemplateTest(
             nameof(SdkTemplateTests), language, _scenarioTestInput.TargetRid, DotNetSdkTemplate.Console,
@@ -35,7 +35,7 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
     [Theory]
     [MemberData(nameof(GetLanguages))]
     [Trait("Category", "Offline")]
-    public void VerifyOfflineConsoleTemplate(DotNetLanguage language)
+    public void VerifyConsoleTemplate(DotNetLanguage language)
     {
         var newTest = new SdkTemplateTest(
             nameof(SdkTemplateTests) + "Offline", language, _scenarioTestInput.TargetRid, DotNetSdkTemplate.Console,
