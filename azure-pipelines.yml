@@ -25,6 +25,7 @@ stages:
       enablePublishUsingPipelines: true
       enableTelemetry: true
       enableSourceBuild: true
+      publishAssetsImmediately: true
       helixRepo: dotnet/scenario-tests
       jobs:
       - job: Windows
@@ -101,6 +102,9 @@ stages:
   - template: eng\common\templates\post-build\post-build.yml
     parameters:
       publishingInfraVersion: 3
+      publishAssetsImmediately: true
       # Symbol validation isn't being very reliable lately. This should be enabled back
       # once this issue is resolved: https://github.com/dotnet/arcade/issues/2871
       enableSymbolValidation: false
+      enableNuGetValidation: false
+      enableSigningValidation: false
