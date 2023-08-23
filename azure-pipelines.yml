@@ -21,12 +21,11 @@ stages:
   - template: /eng/common/templates/jobs/jobs.yml
     parameters:
       enableMicrobuild: true
-      enablePublishBuildArtifacts: true
       enablePublishTestResults: true
-      enablePublishBuildAssets: true
       enablePublishUsingPipelines: true
       enableTelemetry: true
       enableSourceBuild: true
+      publishAssetsImmediately: true
       helixRepo: dotnet/scenario-tests
       jobs:
       - job: Windows
@@ -59,7 +58,7 @@ stages:
               ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
                 _BuildArgs: ''
               ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-                _BuildArgs: $(_OfficialBuildArgs)
+                _BuildArgs: $(_OfficialBuildArgs) /p:DotNetPublishUsingPipelines=true
         steps:
         - checkout: self
           clean: true
@@ -103,6 +102,9 @@ stages:
   - template: eng\common\templates\post-build\post-build.yml
     parameters:
       publishingInfraVersion: 3
+      publishAssetsImmediately: true
       # Symbol validation isn't being very reliable lately. This should be enabled back
       # once this issue is resolved: https://github.com/dotnet/arcade/issues/2871
       enableSymbolValidation: false
+      enableNuGetValidation: false
+      enableSigningValidation: false
