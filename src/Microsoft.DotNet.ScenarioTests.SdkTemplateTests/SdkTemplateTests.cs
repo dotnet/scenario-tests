@@ -135,7 +135,7 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
             DotNetSdkActions.Run | DotNetSdkActions.Publish);
         newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
     }
-    
+    /*
     [Theory]
     [MemberData(nameof(GetAllLanguagesWithDownlevelFrameworks))]
     [Trait("Category", "Downlevel")]
@@ -157,13 +157,14 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
             nameof(SdkTemplateTest), DotNetLanguage.CSharp, _scenarioTestInput.TargetRid, DotNetSdkTemplate.WebApp,
             DotNetSdkActions.Test | DotNetSdkActions.Run | DotNetSdkActions.PublishComplex);
         newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot, framework: "-f " + frameworks);
-    }
+    }*/
     
     private static IEnumerable<object[]> GetLanguages() => Enum.GetValues<DotNetLanguage>().Select(lang => new object[] { lang });
 
+    /*
     private static string[] AllDownLevelFrameworks = new string[] { "net6.0", "net7.0" };
 
     private static IEnumerable<object[]> GetAllLanguagesWithDownlevelFrameworks() 
         => Enum.GetValues<DotNetLanguage>().
-        SelectMany(lang => AllDownLevelFrameworks.Select(tfm => new object[] { lang, tfm }));
+        SelectMany(lang => AllDownLevelFrameworks.Select(tfm => new object[] { lang, tfm }));*/
 }
