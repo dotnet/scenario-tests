@@ -23,6 +23,7 @@ stages:
       enableMicrobuild: true
       enablePublishTestResults: true
       enablePublishUsingPipelines: true
+      enablePublishBuildAssets: true
       enableTelemetry: true
       enableSourceBuild: true
       publishAssetsImmediately: true
