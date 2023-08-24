@@ -4,7 +4,7 @@
 
 using System.Runtime.InteropServices;
 
-namespace Microsoft.DotNet.ScenarioTests.SdkTemplateTests
+namespace Microsoft.DotNet.ScenarioTests.Common
 {
     internal static class OperatingSystemFinder
     {
@@ -17,7 +17,7 @@ namespace Microsoft.DotNet.ScenarioTests.SdkTemplateTests
         internal static OSPlatform GetPlatform()
         {
             if (IsWindowsPlatform())
-                return OSPlatform.Linux;
+                return OSPlatform.Windows;
             else if (IsOSXPlatform())
                 return OSPlatform.OSX;
             else if (IsLinuxPlatform())

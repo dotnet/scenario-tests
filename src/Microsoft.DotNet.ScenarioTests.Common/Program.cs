@@ -9,7 +9,6 @@ using Xunit.Abstractions;
 using Xunit.Sdk;
 using System.Runtime.InteropServices;
 using System.Collections.Immutable;
-using Microsoft.DotNet.ScenarioTests.SdkTemplateTests;
 
 namespace ScenarioTests
 {
