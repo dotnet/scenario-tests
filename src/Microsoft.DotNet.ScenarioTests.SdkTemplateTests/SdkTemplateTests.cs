@@ -21,7 +21,7 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
         _testOutputHelper = outputHelper;
         _sdkHelper = new DotNetSdkHelper(outputHelper, _scenarioTestInput.DotNetRoot, _scenarioTestInput.SdkVersion);
     }
-    
+
     [Theory]
     [MemberData(nameof(GetLanguages))]
     public void VerifyConsoleTemplateComplex(DotNetLanguage language)
@@ -88,6 +88,8 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
     [InlineData(DotNetLanguage.CSharp)]
     [InlineData(DotNetLanguage.VB)]
     [Trait("Category", "Offline")]
+    [Trait("SkipIfPlatform", "LINUX")]
+    [Trait("SkipIfPlatform", "OSX")]
     public void VerifyWPFTemplate(DotNetLanguage language)
     {
         var newTest = new SdkTemplateTest(
@@ -98,6 +100,8 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
     
     [Fact]
     [Trait("Category", "Offline")]
+    [Trait("SkipIfPlatform", "LINUX")]
+    [Trait("SkipIfPlatform", "OSX")]
     public void VerifyWebAppTemplate()
     {
         var newTest = new SdkTemplateTest(
@@ -106,11 +110,12 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
         newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
     }
     
-    
     [Theory]
     [InlineData(DotNetLanguage.CSharp)]
     [InlineData(DotNetLanguage.VB)]
     [Trait("Category", "Offline")]
+    [Trait("SkipIfPlatform", "LINUX")]
+    [Trait("SkipIfPlatform", "OSX")]
     public void VerifyWinformsTemplate(DotNetLanguage language)
     {
         var newTest = new SdkTemplateTest(
@@ -123,6 +128,7 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
     [InlineData(DotNetLanguage.CSharp)]
     [InlineData(DotNetLanguage.VB)]
     [Trait("Category", "Offline")]
+    [Trait("SkipIfPlatform", "OSX")]
     public void VerifyReferenceInConsoleTemplate(DotNetLanguage language)
     {
         var referenceTest = new SdkTemplateTest(
@@ -135,6 +141,7 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
             DotNetSdkActions.Run | DotNetSdkActions.Publish);
         newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
     }
+    
     /*
     [Theory]
     [MemberData(nameof(GetAllLanguagesWithDownlevelFrameworks))]
