@@ -20,4 +20,6 @@ public enum DotNetSdkTemplate
     WebApp,
     Worker,
     Angular,
+    Wpf,
+    Winforms,
 }

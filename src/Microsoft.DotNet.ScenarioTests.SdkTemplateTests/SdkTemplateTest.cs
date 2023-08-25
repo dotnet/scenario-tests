@@ -23,17 +23,26 @@ public class SdkTemplateTest
         TargetRid = targetRid;
     }
 
-    internal void Execute(DotNetSdkHelper dotNetHelper, string testRoot)
+    internal void Execute(DotNetSdkHelper dotNetHelper, string testRoot, string? framework = null)
     {
         // Don't use the cli language name in the project name because it may contain '#': https://github.com/dotnet/roslyn/issues/51692
         string projectName = $"{ScenarioName}_{Template}_{Language}";
         string customNewArgs = Template.IsAspNetCore() && NoHttps ? "--no-https" : string.Empty;
         string projectDirectory = Path.Combine(testRoot, projectName);
+        if (framework != null)
+        {
+            customNewArgs += framework;
+            projectDirectory += "_" + framework.Split(' ')[1];
+        }
 
         Directory.CreateDirectory(projectDirectory);
 
         dotNetHelper.ExecuteNew(Template.GetName(), projectName, projectDirectory, Language.ToCliName(), customArgs: customNewArgs);
 
+        if (Commands.HasFlag(DotNetSdkActions.AddClassLibRef))
+        {
+            dotNetHelper.ExecuteAddClassReference(projectDirectory);
+        }
         if (Commands.HasFlag(DotNetSdkActions.Build))
         {
             dotNetHelper.ExecuteBuild(projectDirectory);
@@ -43,6 +52,10 @@ public class SdkTemplateTest
             if (Template.IsAspNetCore())
             {
                 dotNetHelper.ExecuteRunWeb(projectDirectory);
+            }
+            else if (Template.isUIApp())
+            {
+                dotNetHelper.ExecuteRunUIApp(projectDirectory);
             }
             else
             {
@@ -55,7 +68,7 @@ public class SdkTemplateTest
         }
         if (Commands.HasFlag(DotNetSdkActions.PublishComplex))
         {
-            dotNetHelper.ExecutePublish(projectDirectory, selfContained: false);
+            dotNetHelper.ExecutePublish(projectDirectory, selfContained: false);        
             dotNetHelper.ExecutePublish(projectDirectory, selfContained: true, TargetRid);
             dotNetHelper.ExecutePublish(projectDirectory, selfContained: true, $"linux-{TargetArchitecture}");
         }

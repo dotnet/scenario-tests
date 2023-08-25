@@ -93,7 +93,7 @@ internal class DotNetSdkHelper
         {
             options += $" --language \"{language}\"";
         }
-        if (string.IsNullOrEmpty(customArgs))
+        if (!string.IsNullOrEmpty(customArgs))
         {
             options += $" {customArgs}";
         }
@@ -107,7 +107,7 @@ internal class DotNetSdkHelper
     {
         string options = string.Empty;
         string binlogDifferentiator = string.Empty;
-
+        
         if (selfContained.HasValue)
         {
             options += $"--self-contained {selfContained.Value.ToString().ToLowerInvariant()}";
@@ -160,6 +160,41 @@ internal class DotNetSdkHelper
         }
     }
 
+    public void ExecuteRunUIApp(string projectDirectory)
+    {
+        ExecuteCmd(
+            $"run {GetBinLogOption(projectDirectory, "run")}",
+            projectDirectory,
+            additionalProcessConfigCallback: processConfigCallback,
+            millisecondTimeout: 30000);
+
+        [DllImport("Kernel32.dll")]
+        static extern bool TerminateProcess(IntPtr process, uint uExit);
+        async void processConfigCallback(Process process)
+        {
+            await Task.Delay(5000);
+            while (!checkProcess(projectDirectory, process))
+            {
+                await Task.Delay(5000);
+            }
+            TerminateProcess(process.Handle, 0);
+            process.WaitForExit();
+        }
+
+        bool checkProcess(string projectDirectory, Process process)
+        {
+            try
+            {
+                Process.GetProcessById(process.Id);
+                return true;
+            }
+            catch (InvalidOperationException)
+            {
+                return false;
+            }
+        }
+    }
+
     public void ExecuteTest(string projectDirectory) =>
         ExecuteCmd($"test {GetBinLogOption(projectDirectory, "test")}", workingDirectory: projectDirectory);
 
@@ -172,5 +207,12 @@ internal class DotNetSdkHelper
         }
 
         return $"/bl:{Path.Combine(projectDirectory, $"{fileName}.binlog")}";
+    }
+
+    public void ExecuteAddClassReference(string projectDirectory)
+    {
+        //Very hacky fix to grab class library path assuming Console referencing Classlib
+        string classDirectory = projectDirectory.Replace("Console", "ClassLib");
+        ExecuteCmd($"add reference {classDirectory}", projectDirectory);
     }
 }

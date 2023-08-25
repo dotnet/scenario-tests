@@ -15,4 +15,5 @@ public enum DotNetSdkActions
     PublishComplex = 16,
     PublishR2R = 32,
     Test = 64,
+    AddClassLibRef = 128,
 }

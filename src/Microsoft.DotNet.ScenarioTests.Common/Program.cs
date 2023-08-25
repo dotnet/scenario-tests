@@ -7,8 +7,6 @@ using System.Xml.Linq;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Sdk;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Collections.Immutable;
 
@@ -128,6 +126,7 @@ namespace ScenarioTests
                 (completed, summary) => Console.WriteLine($"Tests run: {summary.Total}, Errors: {summary.Errors}, Failures: {summary.Failed}, Skipped: {summary.Skipped}. Time: {TimeSpan.FromSeconds((double)summary.Time).TotalSeconds}s"));
             var resultsXmlAssembly = new XElement("assembly");
             var resultsSink = new DelegatingXmlCreationSink(summarySink, resultsXmlAssembly);
+            var platform = OperatingSystemFinder.GetPlatform();
 
             testSink.Execution.TestSkippedEvent += args => { Console.WriteLine($"[SKIP] {args.Message.Test.DisplayName}"); };
             testSink.Execution.TestFailedEvent += args => { Console.WriteLine($"[FAIL] {args.Message.Test.DisplayName}{Environment.NewLine}{Xunit.ExceptionUtility.CombineMessages(args.Message)}{Environment.NewLine}{Xunit.ExceptionUtility.CombineStackTraces(args.Message)}"); };
@@ -153,7 +152,7 @@ namespace ScenarioTests
             discoverer.Find(false, discoverySink, TestFrameworkOptions.ForDiscovery(assemblyConfig));
             discoverySink.Finished.WaitOne();
 
-            XunitFilters filters = CreateFilters(noTraits, traits, offlineOnly);
+            XunitFilters filters = CreateFilters(noTraits, traits, offlineOnly, platform);
 
             var filteredTestCases = discoverySink.TestCases.Where(filters.Filter).ToList();
 
@@ -162,6 +161,7 @@ namespace ScenarioTests
             Console.WriteLine($"  Test root: {testRoot}");
             Console.WriteLine($"  Target RID: {targetRid}");
             Console.WriteLine($"  Sdk Version: {sdkVersion ?? "latest"}");
+            Console.WriteLine($"  Platform: {platform}");
 
             if (listOnly)
             {
@@ -213,7 +213,7 @@ namespace ScenarioTests
         }
 
 
-        private static XunitFilters CreateFilters(IList<string> excludedTraits, IList<string> includedTraits, bool offlineOnly)
+        private static XunitFilters CreateFilters(IList<string> excludedTraits, IList<string> includedTraits, bool offlineOnly, OSPlatform platform)
         {
             XunitFilters filters = new XunitFilters();
 
@@ -228,8 +228,10 @@ namespace ScenarioTests
                 filters.ExcludedTraits.Add(kvp.Key, kvp.Value);
             }
 
+            filters.ExcludedTraits.Add("SkipIfPlatform", new List<string>() {$"{platform}"});
+
             Dictionary<string, List<string>> includedTraitsMap = ParseTraitKeyValuePairs(includedTraits);
-            foreach (KeyValuePair<string, List<string>> kvp in excludedTraitsMap)
+            foreach (KeyValuePair<string, List<string>> kvp in includedTraitsMap)
             {
                 filters.IncludedTraits.Add(kvp.Key, kvp.Value);
             }
@@ -243,14 +245,13 @@ namespace ScenarioTests
             Dictionary<string, List<string>> excludedTraitsMap = new Dictionary<string, List<string>>();
             for (int i = 0; i < excludedTraits.Count(); i++)
             {
-                var traitKeyValue = excludedTraits[i + 1].Split("=", StringSplitOptions.TrimEntries);
+                var traitKeyValue = excludedTraits[i].Split("=", StringSplitOptions.TrimEntries);
                 if (!excludedTraitsMap.TryGetValue(traitKeyValue[0], out List<string>? values))
                 {
                     excludedTraitsMap.Add(traitKeyValue[0], values = new List<string>());
                 }
                 values.Add(traitKeyValue[1]);
             }
-
             return excludedTraitsMap;
         }
     }
