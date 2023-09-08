@@ -29,6 +29,7 @@ public class SdkTemplateTest
         string projectName = $"{ScenarioName}_{Template}_{Language}";
         string customNewArgs = Template.IsAspNetCore() && NoHttps ? "--no-https" : string.Empty;
         string projectDirectory = Path.Combine(testRoot, projectName);
+        bool multiTFM = false;
         if (framework != null)
         {
             customNewArgs += framework;
@@ -43,6 +44,11 @@ public class SdkTemplateTest
         {
             dotNetHelper.ExecuteAddClassReference(projectDirectory);
         }
+        if (Commands.HasFlag(DotNetSdkActions.AddMultiTFM))
+        {
+            dotNetHelper.ExecuteAddMultiTFM(projectName, projectDirectory, Language);
+            multiTFM = true;
+        }
         if (Commands.HasFlag(DotNetSdkActions.Build))
         {
             dotNetHelper.ExecuteBuild(projectDirectory);
@@ -55,16 +61,16 @@ public class SdkTemplateTest
             }
             else if (Template.isUIApp())
             {
-                dotNetHelper.ExecuteRunUIApp(projectDirectory);
+                dotNetHelper.ExecuteRunUIApp(projectDirectory, multiTFM);
             }
             else
             {
-                dotNetHelper.ExecuteRun(projectDirectory);
+                dotNetHelper.ExecuteRun(projectDirectory, multiTFM);
             }
         }
         if (Commands.HasFlag(DotNetSdkActions.Publish))
         {
-            dotNetHelper.ExecutePublish(projectDirectory);
+            dotNetHelper.ExecutePublish(projectDirectory, multiTfm: multiTFM);
         }
         if (Commands.HasFlag(DotNetSdkActions.PublishComplex))
         {
