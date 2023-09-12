@@ -284,7 +284,8 @@ internal class DotNetSdkHelper
                 break;
         }
         XmlDocument document = new XmlDocument();
-        document.Load(projectDirectory + @"\" + projectName + extension);
+        projectDirectory = Path.Combine(projectDirectory, projectName + extension);
+        document.Load(projectDirectory);
         if (document.HasChildNodes)
         {
             try
@@ -299,7 +300,7 @@ internal class DotNetSdkHelper
                         oldNode.ParentNode.InsertBefore(newNode, oldNode);
                         oldNode.ParentNode.RemoveChild(oldNode);
                     }
-                    document.Save(projectDirectory + @"\" + projectName + extension);
+                    document.Save(projectDirectory);
                 }
             }
             catch (XPathException e)
