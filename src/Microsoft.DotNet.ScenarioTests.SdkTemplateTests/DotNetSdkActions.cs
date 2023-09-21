@@ -16,5 +16,4 @@ public enum DotNetSdkActions
     PublishR2R = 32,
     Test = 64,
     AddClassLibRef = 128,
-    AddMultiTFM = 256,
 }

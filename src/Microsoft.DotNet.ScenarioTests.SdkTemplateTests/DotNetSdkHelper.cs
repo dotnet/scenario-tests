@@ -105,7 +105,7 @@ internal class DotNetSdkHelper
         return projectDirectory;
     }
 
-    public void ExecutePublish(string projectDirectory, bool? selfContained = null, string? rid = null, bool trimmed = false, bool readyToRun = false, bool multiTfm = false)
+    public void ExecutePublish(string projectDirectory, bool? selfContained = null, string? rid = null, bool trimmed = false, bool readyToRun = false, string[]? frameworks = null)
     {
         string options = string.Empty;
         string binlogDifferentiator = string.Empty;
@@ -134,17 +134,14 @@ internal class DotNetSdkHelper
             }
         }
 
-        if (multiTfm)
+        if (frameworks != null)
         {
-            ExecuteCmd(
-                args: $"publish {options} {GetBinLogOption(projectDirectory, "publish", binlogDifferentiator)} --framework net8.0",
+            foreach (var item in frameworks)
+            {
+                ExecuteCmd(
+                args: $"publish {options} {GetBinLogOption(projectDirectory, "publish", binlogDifferentiator)} --framework " + item,
                 workingDirectory: projectDirectory);
-            ExecuteCmd(
-                args: $"publish {options} {GetBinLogOption(projectDirectory, "publish", binlogDifferentiator)} --framework net7.0",
-                workingDirectory: projectDirectory);
-            ExecuteCmd(
-                args: $"publish {options} {GetBinLogOption(projectDirectory, "publish", binlogDifferentiator)} --framework net6.0",
-                workingDirectory: projectDirectory);
+            }
         }
         else
         {
@@ -154,13 +151,14 @@ internal class DotNetSdkHelper
         }
     }
 
-    public void ExecuteRun(string projectDirectory, bool multiTFM = false)
+    public void ExecuteRun(string projectDirectory, string[]? frameworks = null)
     {
-        if (multiTFM)
+        if (frameworks != null)
         {
-            ExecuteCmd($"run {GetBinLogOption(projectDirectory, "run")} --framework net8.0", projectDirectory);
-            ExecuteCmd($"run {GetBinLogOption(projectDirectory, "run")} --framework net7.0", projectDirectory);
-            ExecuteCmd($"run {GetBinLogOption(projectDirectory, "run")} --framework net6.0", projectDirectory);
+            foreach (var item in frameworks)
+            {
+                ExecuteCmd($"run {GetBinLogOption(projectDirectory, "run")} --framework " + item, projectDirectory);
+            }
         }
         else
         {
@@ -188,25 +186,18 @@ internal class DotNetSdkHelper
         }
     }
 
-    public void ExecuteRunUIApp(string projectDirectory, bool multiTFM = false)
+    public void ExecuteRunUIApp(string projectDirectory, string[]? frameworks = null)
     {
-        if (multiTFM)
+        if (frameworks != null)
         {
-            ExecuteCmd(
-                $"run {GetBinLogOption(projectDirectory, "run")} --framework net8.0",
+            foreach (var item in frameworks)
+            {
+                ExecuteCmd(
+                $"run {GetBinLogOption(projectDirectory, "run")} --framework " + item,
                 projectDirectory,
                 additionalProcessConfigCallback: processConfigCallback,
                 millisecondTimeout: 30000);
-            ExecuteCmd(
-                $"run {GetBinLogOption(projectDirectory, "run")} --framework net7.0",
-                projectDirectory,
-                additionalProcessConfigCallback: processConfigCallback,
-                millisecondTimeout: 30000);
-            ExecuteCmd(
-                $"run {GetBinLogOption(projectDirectory, "run")} --framework net6.0",
-                projectDirectory,
-                additionalProcessConfigCallback: processConfigCallback,
-                millisecondTimeout: 30000);
+            }
         }
         else
         {
@@ -265,7 +256,7 @@ internal class DotNetSdkHelper
         ExecuteCmd($"add reference {classDirectory}", projectDirectory);
     }
 
-    public void ExecuteAddMultiTFM(string projectName, string projectDirectory, DotNetLanguage language)
+    public void ExecuteAddMultiTFM(string projectName, string projectDirectory, DotNetLanguage language, string[] frameworks)
     {
         string extension;
         switch (language)
@@ -283,6 +274,12 @@ internal class DotNetSdkHelper
                 extension = ".csproj";
                 break;
         }
+        string framework = "";
+        foreach (var item in frameworks)
+        {
+            framework += item + ";";
+        }
+
         XmlDocument document = new XmlDocument();
         projectDirectory = Path.Combine(projectDirectory, projectName + extension);
         document.Load(projectDirectory);
@@ -294,7 +291,7 @@ internal class DotNetSdkHelper
                     XmlNode root = document.FirstChild;
                     XmlNode? oldNode = root.SelectSingleNode(".//TargetFramework");
                     XmlNode newNode = document.CreateElement("TargetFrameworks");
-                    newNode.InnerXml = "net8.0;net7.0;net6.0";
+                    newNode.InnerXml = framework;
                     if (oldNode != null && oldNode.ParentNode != null)
                     {
                         oldNode.ParentNode.InsertBefore(newNode, oldNode);

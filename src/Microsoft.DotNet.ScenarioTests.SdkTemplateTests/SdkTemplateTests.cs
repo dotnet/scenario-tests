@@ -149,10 +149,10 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
     {
         var newTest = new SdkTemplateTest(
             nameof(SdkTemplateTests) + "MultiTFM", language, _scenarioTestInput.TargetRid, DotNetSdkTemplate.Console,
-            DotNetSdkActions.Build | DotNetSdkActions.Run | DotNetSdkActions.AddMultiTFM | DotNetSdkActions.Publish);
-        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
+            DotNetSdkActions.Build | DotNetSdkActions.Run | DotNetSdkActions.Publish);
+        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot, GetFrameworks);
     }
-    
+
     /*
      * v-masche note: Requires ASP.NET runtimes for .NET6 and .NET7. To be enabled if we decide to 
      * download that as part of the build like we do the normal .NET runtimes
@@ -162,9 +162,11 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
     {
         var newTest = new SdkTemplateTest(
             nameof(SdkTemplateTest) + "MultiTFM", DotNetLanguage.CSharp, _scenarioTestInput.TargetRid, DotNetSdkTemplate.WebApp,
-            DotNetSdkActions.Build | DotNetSdkActions.Run | DotNetSdkActions.AddMultiTFM | DotNetSdkActions.Publish);
-        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
+            DotNetSdkActions.Build | DotNetSdkActions.Run | DotNetSdkActions.Publish);
+        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot, GetFrameworks);
     }*/
+
+    private static string[] GetFrameworks = { "net8.0", "net7.0", "net6.0" };
     
     private static IEnumerable<object[]> GetLanguages() => Enum.GetValues<DotNetLanguage>().Select(lang => new object[] { lang });
 
