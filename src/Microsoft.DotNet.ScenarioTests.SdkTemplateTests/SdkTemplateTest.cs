@@ -23,21 +23,21 @@ public class SdkTemplateTest
         TargetRid = targetRid;
     }
 
-    internal void Execute(DotNetSdkHelper dotNetHelper, string testRoot, string? framework = null)
+    internal void Execute(DotNetSdkHelper dotNetHelper, string testRoot, string[]? frameworks = null)
     {
         // Don't use the cli language name in the project name because it may contain '#': https://github.com/dotnet/roslyn/issues/51692
         string projectName = $"{ScenarioName}_{Template}_{Language}";
         string customNewArgs = Template.IsAspNetCore() && NoHttps ? "--no-https" : string.Empty;
         string projectDirectory = Path.Combine(testRoot, projectName);
-        if (framework != null)
-        {
-            customNewArgs += framework;
-            projectDirectory += "_" + framework.Split(' ')[1];
-        }
 
         Directory.CreateDirectory(projectDirectory);
 
         dotNetHelper.ExecuteNew(Template.GetName(), projectName, projectDirectory, Language.ToCliName(), customArgs: customNewArgs);
+
+        if (frameworks != null)
+        {
+            dotNetHelper.ExecuteAddMultiTFM(projectName, projectDirectory, Language, frameworks);
+        }
 
         if (Commands.HasFlag(DotNetSdkActions.AddClassLibRef))
         {
@@ -55,16 +55,16 @@ public class SdkTemplateTest
             }
             else if (Template.isUIApp())
             {
-                dotNetHelper.ExecuteRunUIApp(projectDirectory);
+                dotNetHelper.ExecuteRunUIApp(projectDirectory, frameworks);
             }
             else
             {
-                dotNetHelper.ExecuteRun(projectDirectory);
+                dotNetHelper.ExecuteRun(projectDirectory, frameworks);
             }
         }
         if (Commands.HasFlag(DotNetSdkActions.Publish))
         {
-            dotNetHelper.ExecutePublish(projectDirectory);
+            dotNetHelper.ExecutePublish(projectDirectory, frameworks: frameworks);
         }
         if (Commands.HasFlag(DotNetSdkActions.PublishComplex))
         {

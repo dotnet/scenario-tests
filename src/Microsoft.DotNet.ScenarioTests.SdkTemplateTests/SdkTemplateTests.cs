@@ -142,36 +142,32 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
         newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
     }
     
-    /*
     [Theory]
-    [MemberData(nameof(GetAllLanguagesWithDownlevelFrameworks))]
-    [Trait("Category", "Downlevel")]
-    public void VerifyDownlevelFrameworksInConsoleTemplate(DotNetLanguage language, string frameworks)
+    [Trait("Category", "MultiTFM")]
+    [MemberData(nameof(GetLanguages))]
+    public void VerifyMultiTFMInConsoleTemplate(DotNetLanguage language)
     {
         var newTest = new SdkTemplateTest(
-            nameof(SdkTemplateTests), language, _scenarioTestInput.TargetRid, DotNetSdkTemplate.Console,
-            DotNetSdkActions.Build | DotNetSdkActions.Run | DotNetSdkActions.PublishComplex | DotNetSdkActions.PublishR2R);
-        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot, framework: "-f " + frameworks);
+            nameof(SdkTemplateTests) + "MultiTFM", language, _scenarioTestInput.TargetRid, DotNetSdkTemplate.Console,
+            DotNetSdkActions.Build | DotNetSdkActions.Run | DotNetSdkActions.Publish);
+        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot, GetFrameworks);
     }
 
-    [Theory]
-    [InlineData("net6.0")]
-    [InlineData("net7.0")]
-    [Trait("Category", "Downlevel")]
-    public void VerifyDownLevelFrameworksInWebAppTemplate(string frameworks)
+    /*
+     * v-masche note: Requires ASP.NET runtimes for .NET6 and .NET7. To be enabled if we decide to 
+     * download that as part of the build like we do the normal .NET runtimes
+    [Fact]
+    [Trait("Category", "MultiTFM")]
+    public void VerifyMultiTFMInWebAppTemplate()
     {
         var newTest = new SdkTemplateTest(
-            nameof(SdkTemplateTest), DotNetLanguage.CSharp, _scenarioTestInput.TargetRid, DotNetSdkTemplate.WebApp,
-            DotNetSdkActions.Test | DotNetSdkActions.Run | DotNetSdkActions.PublishComplex);
-        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot, framework: "-f " + frameworks);
+            nameof(SdkTemplateTest) + "MultiTFM", DotNetLanguage.CSharp, _scenarioTestInput.TargetRid, DotNetSdkTemplate.WebApp,
+            DotNetSdkActions.Build | DotNetSdkActions.Run | DotNetSdkActions.Publish);
+        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot, GetFrameworks);
     }*/
+
+    private static string[] GetFrameworks = { "net8.0", "net7.0", "net6.0" };
     
     private static IEnumerable<object[]> GetLanguages() => Enum.GetValues<DotNetLanguage>().Select(lang => new object[] { lang });
 
-    /*
-    private static string[] AllDownLevelFrameworks = new string[] { "net6.0", "net7.0" };
-
-    private static IEnumerable<object[]> GetAllLanguagesWithDownlevelFrameworks() 
-        => Enum.GetValues<DotNetLanguage>().
-        SelectMany(lang => AllDownLevelFrameworks.Select(tfm => new object[] { lang, tfm }));*/
 }
