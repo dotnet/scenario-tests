@@ -189,7 +189,6 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
 
     [Theory]
     [InlineData(DotNetLanguage.CSharp)]
-    [Trait("Category", "InProgress")]
     public void VerifyBlazorWasmTemplate(DotNetLanguage language)
     {
         var newTest = new SdkTemplateTest(
@@ -223,7 +222,7 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
         newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot, GetFrameworks);
     }
 
-    //v-vmasche note: Still in progress.
+    //v-masche note: Still in progress.
     [Theory]
     [Trait("Category", "Offline")]
     [Trait("Category", "InProgress")]

@@ -37,8 +37,9 @@ public class SdkTemplateTest
         }
         else
         {
-            string PreMadeName = PreMadeSolution.Split('\\').Last();
-            dotNetHelper.CopyHelper(Path.Combine(testRoot, PreMadeName), PreMadeSolution, true);
+            string PreMadeName = PreMadeSolution.Split(Path.DirectorySeparatorChar).Last();
+            projectDirectory = Path.Combine(testRoot, PreMadeName);
+            dotNetHelper.CopyHelper(projectDirectory, PreMadeSolution, true);
         }
 
         if (frameworks != null)
