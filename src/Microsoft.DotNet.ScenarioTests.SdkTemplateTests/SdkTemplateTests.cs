@@ -21,7 +21,7 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
         _testOutputHelper = outputHelper;
         _sdkHelper = new DotNetSdkHelper(outputHelper, _scenarioTestInput.DotNetRoot, _scenarioTestInput.SdkVersion);
     }
-
+    
     [Theory]
     [MemberData(nameof(GetLanguages))]
     public void VerifyConsoleTemplateComplex(DotNetLanguage language)
@@ -144,6 +144,7 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
     
     [Theory]
     [Trait("Category", "MultiTFM")]
+    [Trait("Category", "Offline")]
     [MemberData(nameof(GetLanguages))]
     public void VerifyMultiTFMInConsoleTemplate(DotNetLanguage language)
     {
@@ -151,6 +152,62 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
             nameof(SdkTemplateTests) + "MultiTFM", language, _scenarioTestInput.TargetRid, DotNetSdkTemplate.Console,
             DotNetSdkActions.Build | DotNetSdkActions.Run | DotNetSdkActions.Publish);
         newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot, GetFrameworks);
+    }
+
+    [Theory]
+    [InlineData(DotNetLanguage.CSharp)]
+    [InlineData(DotNetLanguage.FSharp)]
+    public void VerifyMVCTemplate(DotNetLanguage language)
+    {
+        var newTest = new SdkTemplateTest(
+            nameof(SdkTemplateTest), language, _scenarioTestInput.TargetRid, DotNetSdkTemplate.Mvc,
+            DotNetSdkActions.Build | DotNetSdkActions.Run | DotNetSdkActions.Publish);
+        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
+    }
+
+    [Theory]
+    [InlineData(DotNetLanguage.CSharp)]
+    [InlineData(DotNetLanguage.FSharp)]
+    public void VerifyWebAPITemplate(DotNetLanguage language)
+    {
+        var newTest = new SdkTemplateTest(
+            nameof(SdkTemplateTest), language, _scenarioTestInput.TargetRid, DotNetSdkTemplate.WebApi,
+            DotNetSdkActions.Build | DotNetSdkActions.Run | DotNetSdkActions.Publish);
+        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
+    }
+
+    [Theory]
+    [InlineData(DotNetLanguage.CSharp)]
+    [InlineData(DotNetLanguage.FSharp)]
+    public void VerifyWebTemplate(DotNetLanguage language)
+    {
+        var newTest = new SdkTemplateTest(
+            nameof(SdkTemplateTest), language, _scenarioTestInput.TargetRid, DotNetSdkTemplate.Web,
+            DotNetSdkActions.Build | DotNetSdkActions.Run | DotNetSdkActions.Publish);
+        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
+    }
+
+    [Theory]
+    [InlineData(DotNetLanguage.CSharp)]
+    [Trait("Category", "InProgress")]
+    public void VerifyBlazorWasmTemplate(DotNetLanguage language)
+    {
+        var newTest = new SdkTemplateTest(
+            nameof(SdkTemplateTest), language, _scenarioTestInput.TargetRid, DotNetSdkTemplate.BlazorWasm,
+            DotNetSdkActions.Build | DotNetSdkActions.Run | DotNetSdkActions.Publish);
+        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
+    }
+
+
+    //v-masche:note. Will currently fail. Need a valid path for pre-made solution
+    [Fact]
+    [Trait("Category", "Offline")]
+    public void VerifyPreMadeSolution()
+    {
+        var newTest = new SdkTemplateTest(
+            nameof(SdkTemplateTest), DotNetLanguage.CSharp, _scenarioTestInput.TargetRid, DotNetSdkTemplate.Console,
+            DotNetSdkActions.Build | DotNetSdkActions.Run | DotNetSdkActions.Publish);
+        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot, PreMadeSolution: "\\InsertRealPathHere");
     }
 
     /*
@@ -164,6 +221,20 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
             nameof(SdkTemplateTest) + "MultiTFM", DotNetLanguage.CSharp, _scenarioTestInput.TargetRid, DotNetSdkTemplate.WebApp,
             DotNetSdkActions.Build | DotNetSdkActions.Run | DotNetSdkActions.Publish);
         newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot, GetFrameworks);
+    }
+
+    //v-vmasche note: Still in progress.
+    [Theory]
+    [Trait("Category", "Offline")]
+    [Trait("Category", "InProgress")]
+    [MemberData(nameof(GetLanguages))]
+    public void VerifyDuplicateReferenceFailuresInConsoleTemplate(DotNetLanguage language)
+    {
+        var newTest = new SdkTemplateTest(
+            nameof(SdkTemplateTests) + "DupeRef", language, _scenarioTestInput.TargetRid, DotNetSdkTemplate.Console,
+            DotNetSdkActions.Build | DotNetSdkActions.Run | DotNetSdkActions.Publish);
+        string[] GetDupeArray = { "net8.0", "net8.0" };
+        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot, GetDupeArray);
     }*/
 
     private static string[] GetFrameworks = { "net8.0", "net7.0", "net6.0" };

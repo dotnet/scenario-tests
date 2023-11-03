@@ -180,7 +180,10 @@ internal class DotNetSdkHelper
             {
                 if (e.Data?.Contains("Application started. Press Ctrl+C to shut down.") ?? false)
                 {
-                    ExecuteHelper.ExecuteProcessValidateExitCode("kill", $"-s TERM {process.Id}", OutputHelper);
+                    [DllImport("Kernel32.dll")]
+                    static extern bool TerminateProcess(IntPtr process, uint uExit);
+                    TerminateProcess(process.Handle, 0);
+                    process.WaitForExit();
                 }
             });
         }
@@ -305,6 +308,31 @@ internal class DotNetSdkHelper
                 Console.WriteLine("Unable to find node");
                 Console.WriteLine(e.Message);
                 throw;
+            }
+        }
+    }
+
+    internal void CopyHelper(string projectDirectory, string existing, bool recursive)
+    {
+        var sourceDirectory = new DirectoryInfo(existing);
+        if (!sourceDirectory.Exists)
+        {
+            throw new DirectoryNotFoundException($"Existing Directory not found: {existing}");
+        }
+        DirectoryInfo[] directoryInfo = sourceDirectory.GetDirectories();
+        Directory.CreateDirectory(projectDirectory);
+        foreach (var file in sourceDirectory.GetFiles())
+        {
+            string targetPath = Path.Combine(projectDirectory, file.Name);
+            file.CopyTo(targetPath);
+            Console.WriteLine($"Copying {file.Name} to {targetPath}");
+        }
+        if (recursive)
+        {
+            foreach (var directory in directoryInfo)
+            {
+                string newProjectDirectory = Path.Combine(projectDirectory, directory.Name);
+                CopyHelper(newProjectDirectory, directory.FullName, recursive);
             }
         }
     }
