@@ -180,10 +180,14 @@ internal class DotNetSdkHelper
             {
                 if (e.Data?.Contains("Application started. Press Ctrl+C to shut down.") ?? false)
                 {
+#if Windows
                     [DllImport("Kernel32.dll")]
                     static extern bool TerminateProcess(IntPtr process, uint uExit);
                     TerminateProcess(process.Handle, 0);
                     process.WaitForExit();
+#else
+                    ExecuteHelper.ExecuteProcessValidateExitCode("kill", $"-s TERM {process.Id}", OutputHelper);
+#endif
                 }
             });
         }
