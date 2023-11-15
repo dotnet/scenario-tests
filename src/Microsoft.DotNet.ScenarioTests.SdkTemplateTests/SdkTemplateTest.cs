@@ -39,7 +39,10 @@ public class SdkTemplateTest
         {
             string PreMadeName = PreMadeSolution.Split(Path.DirectorySeparatorChar).Last();
             projectDirectory = Path.Combine(testRoot, PreMadeName);
-            dotNetHelper.CopyHelper(projectDirectory, PreMadeSolution, true);
+            string fullPreMadePath = Path.Combine(
+                dotNetHelper.FindRepoRoot(Environment.CurrentDirectory, false),
+                PreMadeSolution);
+            dotNetHelper.CopyHelper(projectDirectory, fullPreMadePath, true);
         }
 
         if (frameworks != null)
