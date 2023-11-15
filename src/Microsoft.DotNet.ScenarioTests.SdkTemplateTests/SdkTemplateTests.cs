@@ -197,8 +197,6 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
         newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
     }
 
-
-    //v-masche:note. Will currently fail. Need a valid path for pre-made solution
     [Fact]
     [Trait("Category", "Offline")]
     public void VerifyPreMadeSolution()
