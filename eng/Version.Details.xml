@@ -21,14 +21,14 @@
       <Uri>https://github.com/dotnet/arcade</Uri>
       <Sha>bb2b4326ddf03d86c92bd125dba87e9d8df63463</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.SourceBuild.Intermediate.source-build-reference-packages" Version="8.0.0-alpha.1.23510.2">
+    <Dependency Name="Microsoft.SourceBuild.Intermediate.source-build-reference-packages" Version="9.0.0-alpha.1.23556.4">
       <Uri>https://github.com/dotnet/source-build-reference-packages</Uri>
-      <Sha>5dd44eb4f5ebf8d1b11152344397b5a79d7f88ea</Sha>
+      <Sha>c1d9595e9c236001fd1412ed94972b9e5e5d8f3d</Sha>
       <SourceBuild RepoName="source-build-reference-packages" ManagedOnly="true" />
     </Dependency>
-    <Dependency Name="Microsoft.SourceBuild.Intermediate.source-build-externals" Version="8.0.0-alpha.1.23502.1">
+    <Dependency Name="Microsoft.SourceBuild.Intermediate.source-build-externals" Version="9.0.0-alpha.1.23556.2">
       <Uri>https://github.com/dotnet/source-build-externals</Uri>
-      <Sha>ed17956dbc31097b7ba6a66be086f4a70a97d84f</Sha>
+      <Sha>283f1ead54cc527da6e9745b6f36a086ac997211</Sha>
       <SourceBuild RepoName="source-build-externals" ManagedOnly="true" />
     </Dependency>
   </ToolsetDependencies>
