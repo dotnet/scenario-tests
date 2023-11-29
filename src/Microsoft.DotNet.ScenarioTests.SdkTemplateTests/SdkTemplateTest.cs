@@ -37,11 +37,17 @@ public class SdkTemplateTest
         }
         else
         {
-            string PreMadeName = PreMadeSolution.Split(Path.DirectorySeparatorChar).Last();
+            string PreMadeName;
+            if (PreMadeSolution.Contains(Path.DirectorySeparatorChar))
+            {
+                PreMadeName = PreMadeSolution.Split(Path.DirectorySeparatorChar).Last();
+            }
+            else
+            {
+                PreMadeName = PreMadeSolution;
+            }
             projectDirectory = Path.Combine(testRoot, PreMadeName);
-            string fullPreMadePath = Path.Combine(
-                dotNetHelper.FindRepoRoot(Environment.CurrentDirectory, false),
-                PreMadeSolution);
+            string fullPreMadePath = Path.Combine(Environment.CurrentDirectory, PreMadeSolution);
             dotNetHelper.CopyHelper(projectDirectory, fullPreMadePath, true);
         }
 

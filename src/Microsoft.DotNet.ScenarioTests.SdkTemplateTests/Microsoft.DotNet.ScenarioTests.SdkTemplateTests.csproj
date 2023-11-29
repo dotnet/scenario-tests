@@ -14,5 +14,9 @@
 	<PropertyGroup Condition="$([MSBuild]::IsOSPlatform('OSX'))">
 		<DefineConstants>OSX</DefineConstants>
 	</PropertyGroup>
+	<ItemGroup>
+		<None Include="..\..\test\resources\**"
+			  CopyToOutputDirectory="Always" />
+	</ItemGroup>
 
 </Project>

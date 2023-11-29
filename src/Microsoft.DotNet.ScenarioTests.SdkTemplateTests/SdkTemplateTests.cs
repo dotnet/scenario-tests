@@ -201,11 +201,10 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
     [Trait("Category", "Offline")]
     public void VerifyPreMadeSolution()
     {
-        string path = "test" + Path.DirectorySeparatorChar + "resources" + Path.DirectorySeparatorChar + "SampleProject";
         var newTest = new SdkTemplateTest(
             nameof(SdkTemplateTest), DotNetLanguage.CSharp, _scenarioTestInput.TargetRid, DotNetSdkTemplate.Console,
             DotNetSdkActions.Build | DotNetSdkActions.Run | DotNetSdkActions.Publish);
-        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot, PreMadeSolution: path);
+        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot, PreMadeSolution: "SampleProject");
     }
 
     /*

@@ -340,32 +340,4 @@ internal class DotNetSdkHelper
             }
         }
     }
-
-    internal string FindRepoRoot(string directory, Boolean rootFound)
-    {
-        var currentDirectory = new DirectoryInfo(directory);
-        var files = currentDirectory.GetFiles();
-        string rootDirectory = "";
-        foreach (var file in files)
-        {
-            if (file.Name == "scenario-tests.sln")
-            {
-                rootFound = true;
-                rootDirectory = currentDirectory.FullName;
-                break;
-            }
-        }
-        if (!rootFound)
-        {
-            if (currentDirectory.Parent != null)
-            {
-                rootDirectory = FindRepoRoot(currentDirectory.Parent.ToString(), false);
-            }
-            else
-            {
-                throw new DirectoryNotFoundException($"file not found in parent directory(s)");
-            }
-        }
-        return rootDirectory;
-    }
 }
