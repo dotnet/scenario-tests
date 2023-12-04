@@ -5,18 +5,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-	<PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
-		<DefineConstants>Windows</DefineConstants>
-	</PropertyGroup>
-	<PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
-		<DefineConstants>Linux</DefineConstants>
-	</PropertyGroup>
-	<PropertyGroup Condition="$([MSBuild]::IsOSPlatform('OSX'))">
-		<DefineConstants>OSX</DefineConstants>
-	</PropertyGroup>
-	<ItemGroup>
-		<None Include="..\..\test\resources\**"
-			  CopyToOutputDirectory="Always" />
-	</ItemGroup>
+  <ItemGroup>
+	<None Include="..\..\test\resources\**"
+		CopyToOutputDirectory="Always" />
+  </ItemGroup>
 
 </Project>

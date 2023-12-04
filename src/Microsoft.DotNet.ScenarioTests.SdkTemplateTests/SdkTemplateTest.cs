@@ -47,7 +47,7 @@ public class SdkTemplateTest
                 PreMadeName = PreMadeSolution;
             }
             projectDirectory = Path.Combine(testRoot, PreMadeName);
-            string fullPreMadePath = Path.Combine(Environment.CurrentDirectory, PreMadeSolution);
+            string fullPreMadePath = Path.Combine(AppContext.BaseDirectory, PreMadeSolution);
             dotNetHelper.CopyHelper(projectDirectory, fullPreMadePath, true);
         }
 
