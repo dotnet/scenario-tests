@@ -168,11 +168,15 @@ internal class DotNetSdkHelper
 
     public void ExecuteRunWeb(string projectDirectory)
     {
+        //checks what Process.Kill() will return based. Windows this is -1, Mac and Linux this appears 
+        //to be process based. Currently 137
+        int exitCode = OperatingSystemFinder.IsWindowsPlatform() ? -1 : 137;
+
         ExecuteCmd(
             $"run {GetBinLogOption(projectDirectory, "run")}",
             projectDirectory,
             additionalProcessConfigCallback: processConfigCallback,
-            expectedExitCode: -1,
+            expectedExitCode: exitCode,
             millisecondTimeout: 30000);
 
         void processConfigCallback(Process process)
