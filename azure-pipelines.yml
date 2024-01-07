@@ -20,14 +20,14 @@ stages:
   jobs:
   - template: /eng/common/templates/jobs/jobs.yml
     parameters:
-      publish:
-        artifacts: true
-        logs: true
-        manifests: true
+      artifacts:
+        publish:
+          artifacts: true
+          logs: true
+          manifests: true
       enableMicrobuild: true
       enablePublishTestResults: true
       enablePublishUsingPipelines: true
-      enablePublishBuildAssets: true
       enableTelemetry: true
       enableSourceBuild: true
       publishAssetsImmediately: true
