@@ -23,16 +23,33 @@ public class SdkTemplateTest
         TargetRid = targetRid;
     }
 
-    internal void Execute(DotNetSdkHelper dotNetHelper, string testRoot, string[]? frameworks = null)
+    internal void Execute(DotNetSdkHelper dotNetHelper, string testRoot, string[]? frameworks = null, string? PreMadeSolution = null)
     {
         // Don't use the cli language name in the project name because it may contain '#': https://github.com/dotnet/roslyn/issues/51692
         string projectName = $"{ScenarioName}_{Template}_{Language}";
         string customNewArgs = Template.IsAspNetCore() && NoHttps ? "--no-https" : string.Empty;
         string projectDirectory = Path.Combine(testRoot, projectName);
 
-        Directory.CreateDirectory(projectDirectory);
-
-        dotNetHelper.ExecuteNew(Template.GetName(), projectName, projectDirectory, Language.ToCliName(), customArgs: customNewArgs);
+        if (PreMadeSolution == null)
+        {
+            Directory.CreateDirectory(projectDirectory);
+            dotNetHelper.ExecuteNew(Template.GetName(), projectName, projectDirectory, Language.ToCliName(), customArgs: customNewArgs);
+        }
+        else
+        {
+            string PreMadeName;
+            if (PreMadeSolution.Contains(Path.DirectorySeparatorChar))
+            {
+                PreMadeName = PreMadeSolution.Split(Path.DirectorySeparatorChar).Last();
+            }
+            else
+            {
+                PreMadeName = PreMadeSolution;
+            }
+            projectDirectory = Path.Combine(testRoot, PreMadeName);
+            string fullPreMadePath = Path.Combine(AppContext.BaseDirectory, PreMadeSolution);
+            dotNetHelper.CopyHelper(projectDirectory, fullPreMadePath, true);
+        }
 
         if (frameworks != null)
         {

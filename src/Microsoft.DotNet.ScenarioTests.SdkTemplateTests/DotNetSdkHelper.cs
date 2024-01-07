@@ -168,10 +168,15 @@ internal class DotNetSdkHelper
 
     public void ExecuteRunWeb(string projectDirectory)
     {
+        //checks what Process.Kill() will return based. Windows this is -1, Mac and Linux this appears 
+        //to be process based. Currently 137
+        int exitCode = OperatingSystemFinder.IsWindowsPlatform() ? -1 : 137;
+
         ExecuteCmd(
             $"run {GetBinLogOption(projectDirectory, "run")}",
             projectDirectory,
             additionalProcessConfigCallback: processConfigCallback,
+            expectedExitCode: exitCode,
             millisecondTimeout: 30000);
 
         void processConfigCallback(Process process)
@@ -180,7 +185,8 @@ internal class DotNetSdkHelper
             {
                 if (e.Data?.Contains("Application started. Press Ctrl+C to shut down.") ?? false)
                 {
-                    ExecuteHelper.ExecuteProcessValidateExitCode("kill", $"-s TERM {process.Id}", OutputHelper);
+                    process.Kill();
+                    process.WaitForExit();
                 }
             });
         }
@@ -305,6 +311,31 @@ internal class DotNetSdkHelper
                 Console.WriteLine("Unable to find node");
                 Console.WriteLine(e.Message);
                 throw;
+            }
+        }
+    }
+
+    internal void CopyHelper(string projectDirectory, string existing, bool recursive)
+    {
+        var sourceDirectory = new DirectoryInfo(existing);
+        if (!sourceDirectory.Exists)
+        {
+            throw new DirectoryNotFoundException($"Existing Directory not found: {existing}");
+        }
+        DirectoryInfo[] directoryInfo = sourceDirectory.GetDirectories();
+        Directory.CreateDirectory(projectDirectory);
+        foreach (var file in sourceDirectory.GetFiles())
+        {
+            string targetPath = Path.Combine(projectDirectory, file.Name);
+            file.CopyTo(targetPath);
+            Console.WriteLine($"Copying {file.Name} to {targetPath}");
+        }
+        if (recursive)
+        {
+            foreach (var directory in directoryInfo)
+            {
+                string newProjectDirectory = Path.Combine(projectDirectory, directory.Name);
+                CopyHelper(newProjectDirectory, directory.FullName, recursive);
             }
         }
     }
