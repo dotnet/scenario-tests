@@ -262,6 +262,54 @@ internal class DotNetSdkHelper
         ExecuteCmd($"add reference {classDirectory}", projectDirectory);
     }
 
+    public void ExecuteWorkloadInstall(string projectDirectory, string templates)
+    {
+        ExecuteCmd($"workload install {templates}", projectDirectory);
+    }
+
+    public void ExecuteWorkloadList(string projectDirectory, string templates, bool shouldBeInstalled)
+    {
+        ExecuteCmd($"workload list", projectDirectory, additionalProcessConfigCallback: processConfigCallback);
+
+        void processConfigCallback(Process process)
+        {
+            string output = "";
+            process.OutputDataReceived += new DataReceivedEventHandler((sender, e) =>
+            {
+                if (e.Data != null)
+                {
+                    output += e.Data;
+                    if (output.Contains("find additional workloads to install."))
+                    {
+                        if (output.Contains(templates))
+                        {
+                            Console.WriteLine($"{templates} is installed");
+                            if (!shouldBeInstalled)
+                            {
+                                throw new Exception($"{templates} shouldn't be installed but was found.");
+                            }
+                            return;
+                        }
+                        else
+                        {
+                            Console.WriteLine($"{templates} is not installed");
+                            if (shouldBeInstalled)
+                            {
+                                throw new Exception($"{templates} should be installed but wasn't found.");
+                            }
+                            return;
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    public void ExecuteWorkloadUninstall(string projectDirectory, string templates)
+    {
+        ExecuteCmd($"workload uninstall {templates}", projectDirectory);
+    }
+
     public void ExecuteAddMultiTFM(string projectName, string projectDirectory, DotNetLanguage language, string[] frameworks)
     {
         string extension;
