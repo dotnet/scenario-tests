@@ -279,6 +279,7 @@ internal class DotNetSdkHelper
                 if (e.Data != null)
                 {
                     output += e.Data;
+                    Console.WriteLine(output);
                     if (output.Contains("find additional workloads to install."))
                     {
                         if (output.Contains(templates))
