@@ -209,6 +209,7 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
 
     [Fact]
     [Trait("Category", "Workload")]
+    [Trait("Category", "InProgress")]
     public void VerifyWorkloadCmd()
     {
         var newTest = new DotnetWorkloadTest(

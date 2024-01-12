@@ -264,7 +264,21 @@ internal class DotNetSdkHelper
 
     public void ExecuteWorkloadInstall(string projectDirectory, string templates)
     {
-        ExecuteCmd($"workload install {templates}", projectDirectory);
+        ExecuteCmd($"workload install {templates}", projectDirectory, additionalProcessConfigCallback: processConfigCallback);
+
+        void processConfigCallback(Process process)
+        {
+            string output = "";
+            process.OutputDataReceived += new DataReceivedEventHandler((sender, e) =>
+            {
+                if (e.Data != null)
+                {
+                    output += e.Data;
+                }
+                Console.WriteLine(output);
+            });
+            Console.WriteLine(output);
+        }
     }
 
     public void ExecuteWorkloadList(string projectDirectory, string templates, bool shouldBeInstalled)
@@ -308,7 +322,21 @@ internal class DotNetSdkHelper
 
     public void ExecuteWorkloadUninstall(string projectDirectory, string templates)
     {
-        ExecuteCmd($"workload uninstall {templates}", projectDirectory);
+        ExecuteCmd($"workload uninstall {templates}", projectDirectory, additionalProcessConfigCallback: processConfigCallback);
+        
+        void processConfigCallback(Process process)
+        {
+            string output = "";
+            process.OutputDataReceived += new DataReceivedEventHandler((sender, e) =>
+            {
+                if (e.Data != null)
+                {
+                    output += e.Data;
+                }
+                Console.WriteLine(output);
+            });
+            Console.WriteLine(output);
+        }
     }
 
     public void ExecuteAddMultiTFM(string projectName, string projectDirectory, DotNetLanguage language, string[] frameworks)
