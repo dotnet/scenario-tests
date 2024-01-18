@@ -308,6 +308,8 @@ internal class DotNetSdkHelper
                                 }
                                 else if(output != originalSource)
                                 {
+                                    Console.WriteLine("output is " + output);
+                                    Console.WriteLine("originalSource is " + originalSource);
                                     throw new Exception($"{templates} shouldn't be installed but was found.");
                                 }
                             }
