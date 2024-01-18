@@ -29,10 +29,13 @@ internal class DotnetWorkloadTest
 
         if (Commands.HasFlag(DotNetSdkActions.Workload))
         {
+            string originalSource = "";
+            //running workload list before install to see if present from another source
+            originalSource = dotNetHelper.ExecuteWorkloadList(projectDirectory, "wasm-tools", false, firstRun: true);
             dotNetHelper.ExecuteWorkloadInstall(projectDirectory, "wasm-tools");
-            dotNetHelper.ExecuteWorkloadList(projectDirectory, "wasm-tools", true);
+            dotNetHelper.ExecuteWorkloadList(projectDirectory, "wasm-tools", true, originalSource);
             dotNetHelper.ExecuteWorkloadUninstall(projectDirectory, "wasm-tools");
-            dotNetHelper.ExecuteWorkloadList(projectDirectory, "wasm-tools", false);
+            dotNetHelper.ExecuteWorkloadList(projectDirectory, "wasm-tools", false, originalSource);
         }
     }
 }

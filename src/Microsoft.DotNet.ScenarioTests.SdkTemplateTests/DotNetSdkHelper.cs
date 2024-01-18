@@ -275,13 +275,14 @@ internal class DotNetSdkHelper
                 {
                     output += e.Data;
                 }
-                Console.WriteLine(output);
+                //Console.WriteLine(output);
             });
-            Console.WriteLine(output);
+            //Console.WriteLine(output);
         }
     }
 
-    public void ExecuteWorkloadList(string projectDirectory, string templates, bool shouldBeInstalled)
+    public string ExecuteWorkloadList(string projectDirectory, string templates, bool shouldBeInstalled, 
+        string originalSource = "", bool firstRun = false)
     {
         ExecuteCmd($"workload list", projectDirectory, additionalProcessConfigCallback: processConfigCallback);
 
@@ -293,7 +294,7 @@ internal class DotNetSdkHelper
                 if (e.Data != null)
                 {
                     output += e.Data;
-                    Console.WriteLine(output);
+                    //Console.WriteLine(output);
                     if (output.Contains("find additional workloads to install."))
                     {
                         if (output.Contains(templates))
@@ -301,7 +302,14 @@ internal class DotNetSdkHelper
                             Console.WriteLine($"{templates} is installed");
                             if (!shouldBeInstalled)
                             {
-                                throw new Exception($"{templates} shouldn't be installed but was found.");
+                                if (firstRun)
+                                {
+                                    originalSource = output;
+                                }
+                                else if(output != originalSource)
+                                {
+                                    throw new Exception($"{templates} shouldn't be installed but was found.");
+                                }
                             }
                             return;
                         }
@@ -318,6 +326,8 @@ internal class DotNetSdkHelper
                 }
             });
         }
+
+        return originalSource;
     }
 
     public void ExecuteWorkloadUninstall(string projectDirectory, string templates)
@@ -333,9 +343,9 @@ internal class DotNetSdkHelper
                 {
                     output += e.Data;
                 }
-                Console.WriteLine(output);
+                //Console.WriteLine(output);
             });
-            Console.WriteLine(output);
+            //Console.WriteLine(output);
         }
     }
 
