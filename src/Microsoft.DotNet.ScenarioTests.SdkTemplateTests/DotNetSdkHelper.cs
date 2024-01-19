@@ -264,7 +264,7 @@ internal class DotNetSdkHelper
 
     public void ExecuteWorkloadInstall(string projectDirectory, string templates)
     {
-        ExecuteCmd($"workload install {templates}", projectDirectory, additionalProcessConfigCallback: processConfigCallback);
+        ExecuteCmd($"workload install {templates} --skip-manifest-update", projectDirectory, additionalProcessConfigCallback: processConfigCallback);
 
         void processConfigCallback(Process process)
         {
