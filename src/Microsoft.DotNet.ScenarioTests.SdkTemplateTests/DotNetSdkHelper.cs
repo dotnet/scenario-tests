@@ -264,21 +264,7 @@ internal class DotNetSdkHelper
 
     public void ExecuteWorkloadInstall(string projectDirectory, string templates)
     {
-        ExecuteCmd($"workload install {templates} --skip-manifest-update", projectDirectory, additionalProcessConfigCallback: processConfigCallback);
-
-        void processConfigCallback(Process process)
-        {
-            string output = "";
-            process.OutputDataReceived += new DataReceivedEventHandler((sender, e) =>
-            {
-                if (e.Data != null)
-                {
-                    output += e.Data;
-                }
-                //Console.WriteLine(output);
-            });
-            //Console.WriteLine(output);
-        }
+        ExecuteCmd($"workload install {templates} --skip-manifest-update", projectDirectory);
     }
 
     public string ExecuteWorkloadList(string projectDirectory, string templates, bool shouldBeInstalled, 
@@ -294,7 +280,6 @@ internal class DotNetSdkHelper
                 if (e.Data != null)
                 {
                     output += e.Data;
-                    //Console.WriteLine(output);
                     if (output.Contains("find additional workloads to install."))
                     {
                         if (output.Contains(templates))
@@ -334,21 +319,7 @@ internal class DotNetSdkHelper
 
     public void ExecuteWorkloadUninstall(string projectDirectory, string templates)
     {
-        ExecuteCmd($"workload uninstall {templates}", projectDirectory, additionalProcessConfigCallback: processConfigCallback);
-        
-        void processConfigCallback(Process process)
-        {
-            string output = "";
-            process.OutputDataReceived += new DataReceivedEventHandler((sender, e) =>
-            {
-                if (e.Data != null)
-                {
-                    output += e.Data;
-                }
-                //Console.WriteLine(output);
-            });
-            //Console.WriteLine(output);
-        }
+        ExecuteCmd($"workload uninstall {templates}", projectDirectory);
     }
 
     public void ExecuteAddMultiTFM(string projectName, string projectDirectory, DotNetLanguage language, string[] frameworks)
