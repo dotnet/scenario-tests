@@ -105,11 +105,16 @@ internal class DotNetSdkHelper
         return projectDirectory;
     }
 
-    public void ExecutePublish(string projectDirectory, bool? selfContained = null, string? rid = null, bool trimmed = false, bool readyToRun = false, string[]? frameworks = null)
+    public void ExecutePublish(string projectDirectory, bool? selfContained = null, string? rid = null, bool trimmed = false, bool readyToRun = false, string[]? frameworks = null, bool aot = false)
     {
         string options = string.Empty;
         string binlogDifferentiator = string.Empty;
-        
+
+        if ((trimmed || readyToRun || aot) && (selfContained.HasValue && selfContained.Value != true))
+        {
+            throw new ArgumentException("Invalid test parameters: Trimmed and ReadyToRun can only be used with self-contained publish");
+        }
+
         if (selfContained.HasValue)
         {
             options += $"--self-contained {selfContained.Value.ToString().ToLowerInvariant()}";
@@ -130,6 +135,15 @@ internal class DotNetSdkHelper
                 {
                     options += " /p:PublishReadyToRun=true";
                     binlogDifferentiator += "-R2R";
+                    if (aot)
+                    {
+                        throw new ArgumentException("Invalid Test parameters: Publish AOT cannot be used with ReadyToRun publish");
+                    }
+                }
+                if (aot)
+                {
+                    options += " /p:PublishAOT=true";
+                    binlogDifferentiator += "-AOT";
                 }
             }
         }
@@ -168,7 +182,7 @@ internal class DotNetSdkHelper
 
     public void ExecuteRunWeb(string projectDirectory)
     {
-        //checks what Process.Kill() will return based. Windows this is -1, Mac and Linux this appears 
+        //checks what Process.Kill() will return based. Windows this is -1, Mac and Linux this appears
         //to be process based. Currently 137
         int exitCode = OperatingSystemFinder.IsWindowsPlatform() ? -1 : 137;
 

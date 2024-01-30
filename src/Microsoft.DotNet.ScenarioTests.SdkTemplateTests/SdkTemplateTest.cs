@@ -85,13 +85,17 @@ public class SdkTemplateTest
         }
         if (Commands.HasFlag(DotNetSdkActions.PublishComplex))
         {
-            dotNetHelper.ExecutePublish(projectDirectory, selfContained: false);        
+            dotNetHelper.ExecutePublish(projectDirectory, selfContained: false);
             dotNetHelper.ExecutePublish(projectDirectory, selfContained: true, TargetRid);
             dotNetHelper.ExecutePublish(projectDirectory, selfContained: true, $"linux-{TargetArchitecture}");
         }
         if (Commands.HasFlag(DotNetSdkActions.PublishR2R))
         {
             dotNetHelper.ExecutePublish(projectDirectory, selfContained: true, $"linux-{TargetArchitecture}", trimmed: true, readyToRun: true);
+        }
+        if (Commands.HasFlag(DotNetSdkActions.PublishAOT))
+        {
+            dotNetHelper.ExecutePublish(projectDirectory, selfContained: true, TargetRid, aot: true);
         }
         if (Commands.HasFlag(DotNetSdkActions.Test))
         {
