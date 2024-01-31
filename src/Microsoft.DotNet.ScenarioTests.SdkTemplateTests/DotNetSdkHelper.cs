@@ -262,12 +262,12 @@ internal class DotNetSdkHelper
         ExecuteCmd($"add reference {classDirectory}", projectDirectory);
     }
 
-    public void ExecuteWorkloadInstall(string projectDirectory, string templates)
+    public void ExecuteWorkloadInstall(string projectDirectory, string workloadIds)
     {
-        ExecuteCmd($"workload install {templates} --skip-manifest-update", projectDirectory);
+        ExecuteCmd($"workload install {workloadIds} --skip-manifest-update", projectDirectory);
     }
 
-    public string ExecuteWorkloadList(string projectDirectory, string templates, bool shouldBeInstalled, 
+    public string ExecuteWorkloadList(string projectDirectory, string workloadIds, bool shouldBeInstalled, 
         string originalSource = "", bool firstRun = false)
     {
         ExecuteCmd($"workload list", projectDirectory, additionalProcessConfigCallback: processConfigCallback);
@@ -282,9 +282,9 @@ internal class DotNetSdkHelper
                     output += e.Data;
                     if (output.Contains("find additional workloads to install."))
                     {
-                        if (output.Contains(templates))
+                        if (output.Contains(workloadIds))
                         {
-                            Console.WriteLine($"{templates} is installed");
+                            Console.WriteLine($"{workloadIds} is installed");
                             if (!shouldBeInstalled)
                             {
                                 if (firstRun)
@@ -295,17 +295,17 @@ internal class DotNetSdkHelper
                                 {
                                     Console.WriteLine("output is " + output);
                                     Console.WriteLine("originalSource is " + originalSource);
-                                    throw new Exception($"{templates} shouldn't be installed but was found.");
+                                    throw new Exception($"{workloadIds} shouldn't be installed but was found.");
                                 }
                             }
                             return;
                         }
                         else
                         {
-                            Console.WriteLine($"{templates} is not installed");
+                            Console.WriteLine($"{workloadIds} is not installed");
                             if (shouldBeInstalled)
                             {
-                                throw new Exception($"{templates} should be installed but wasn't found.");
+                                throw new Exception($"{workloadIds} should be installed but wasn't found.");
                             }
                             return;
                         }
@@ -317,9 +317,9 @@ internal class DotNetSdkHelper
         return originalSource;
     }
 
-    public void ExecuteWorkloadUninstall(string projectDirectory, string templates)
+    public void ExecuteWorkloadUninstall(string projectDirectory, string workloadIds)
     {
-        ExecuteCmd($"workload uninstall {templates}", projectDirectory);
+        ExecuteCmd($"workload uninstall {workloadIds}", projectDirectory);
     }
 
     public void ExecuteAddMultiTFM(string projectName, string projectDirectory, DotNetLanguage language, string[] frameworks)
