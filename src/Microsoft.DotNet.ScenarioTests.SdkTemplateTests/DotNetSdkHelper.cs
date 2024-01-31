@@ -277,39 +277,41 @@ internal class DotNetSdkHelper
             string output = "";
             process.OutputDataReceived += new DataReceivedEventHandler((sender, e) =>
             {
-                if (e.Data != null)
+                if (e.Data is null)
                 {
-                    output += e.Data;
-                    if (output.Contains("find additional workloads to install."))
+                    return;
+                }
+
+                output += e.Data;
+                if (!output.Contains("find additional workloads to install."))
+                {
+                    return;
+                }
+
+                if (output.Contains(workloadIds))
+                {
+                    if (!shouldBeInstalled)
                     {
-                        if (output.Contains(workloadIds))
+                        if (firstRun)
                         {
-                            Console.WriteLine($"{workloadIds} is installed");
-                            if (!shouldBeInstalled)
-                            {
-                                if (firstRun)
-                                {
-                                    originalSource = output;
-                                }
-                                else if(output != originalSource)
-                                {
-                                    Console.WriteLine("output is " + output);
-                                    Console.WriteLine("originalSource is " + originalSource);
-                                    throw new Exception($"{workloadIds} shouldn't be installed but was found.");
-                                }
-                            }
-                            return;
+                            originalSource = output;
                         }
-                        else
+                        else if(output != originalSource)
                         {
-                            Console.WriteLine($"{workloadIds} is not installed");
-                            if (shouldBeInstalled)
-                            {
-                                throw new Exception($"{workloadIds} should be installed but wasn't found.");
-                            }
-                            return;
+                            Console.WriteLine("output is " + output);
+                            Console.WriteLine("originalSource is " + originalSource);
+                            throw new Exception($"{workloadIds} shouldn't be installed but was found.");
                         }
                     }
+                    Console.WriteLine($"{workloadIds} is installed");
+                }
+                else
+                {
+                    if (shouldBeInstalled)
+                    {
+                        throw new Exception($"{workloadIds} should be installed but wasn't found.");
+                    }
+                    Console.WriteLine($"{workloadIds} is not installed");
                 }
             });
         }
