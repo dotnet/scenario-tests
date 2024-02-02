@@ -12,14 +12,14 @@
       <Sha>02fe27cd6a9b001c8feb7938e6ef4b3799745759</Sha>
       <SourceBuild RepoName="command-line-api" ManagedOnly="true" />
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="9.0.0-beta.24081.4">
+    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="9.0.0-beta.24101.2">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>438a8e2488313fb3aa1b24a741a85c2669ee7e0d</Sha>
+      <Sha>db8765409d91a7ac626f5ff932459876a5bea9c6</Sha>
       <SourceBuild RepoName="arcade" ManagedOnly="true" />
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.XliffTasks" Version="9.0.0-beta.24081.4">
+    <Dependency Name="Microsoft.DotNet.XliffTasks" Version="9.0.0-beta.24101.2">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>438a8e2488313fb3aa1b24a741a85c2669ee7e0d</Sha>
+      <Sha>db8765409d91a7ac626f5ff932459876a5bea9c6</Sha>
     </Dependency>
     <Dependency Name="Microsoft.SourceBuild.Intermediate.source-build-reference-packages" Version="9.0.0-alpha.1.24065.2">
       <Uri>https://github.com/dotnet/source-build-reference-packages</Uri>
