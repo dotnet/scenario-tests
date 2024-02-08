@@ -21,7 +21,7 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
         _testOutputHelper = outputHelper;
         _sdkHelper = new DotNetSdkHelper(outputHelper, _scenarioTestInput.DotNetRoot, _scenarioTestInput.SdkVersion);
     }
-    
+
     [Theory]
     [MemberData(nameof(GetLanguages))]
     public void VerifyConsoleTemplateComplex(DotNetLanguage language)
@@ -29,6 +29,16 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
         var newTest = new SdkTemplateTest(
             nameof(SdkTemplateTests) + "Complex", language, _scenarioTestInput.TargetRid, DotNetSdkTemplate.Console,
             DotNetSdkActions.Build | DotNetSdkActions.Run | DotNetSdkActions.PublishComplex | DotNetSdkActions.PublishR2R);
+        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
+    }
+
+    [Theory]
+    [MemberData(nameof(GetLanguages))]
+    public void VerifyConsoleTemplateAOT(DotNetLanguage language)
+    {
+        var newTest = new SdkTemplateTest(
+            nameof(SdkTemplateTests) + "AOT", language, _scenarioTestInput.TargetRid, DotNetSdkTemplate.Console,
+            DotNetSdkActions.Build | DotNetSdkActions.Run | DotNetSdkActions.PublishAOT);
         newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
     }
 
@@ -83,7 +93,7 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
             DotNetSdkActions.Test);
         newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
     }
-    
+
     [Theory]
     [InlineData(DotNetLanguage.CSharp)]
     [InlineData(DotNetLanguage.VB)]
@@ -97,7 +107,7 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
             DotNetSdkActions.Test | DotNetSdkActions.Run | DotNetSdkActions.Publish);
         newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
     }
-    
+
     [Fact]
     [Trait("Category", "Offline")]
     [Trait("SkipIfPlatform", "LINUX")]
@@ -109,7 +119,7 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
             DotNetSdkActions.Test | DotNetSdkActions.Run | DotNetSdkActions.Publish);
         newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
     }
-    
+
     [Theory]
     [InlineData(DotNetLanguage.CSharp)]
     [InlineData(DotNetLanguage.VB)]
@@ -123,7 +133,7 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
             DotNetSdkActions.Test | DotNetSdkActions.Run | DotNetSdkActions.Publish);
         newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
     }
-    
+
     [Theory]
     [InlineData(DotNetLanguage.CSharp)]
     [InlineData(DotNetLanguage.VB)]
@@ -141,7 +151,7 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
             DotNetSdkActions.Run | DotNetSdkActions.Publish);
         newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
     }
-    
+
     [Theory]
     [Trait("Category", "MultiTFM")]
     [Trait("Category", "Offline")]
@@ -208,7 +218,7 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
     }
 
     /*
-     * v-masche note: Requires ASP.NET runtimes for .NET6 and .NET7. To be enabled if we decide to 
+     * v-masche note: Requires ASP.NET runtimes for .NET6 and .NET7. To be enabled if we decide to
      * download that as part of the build like we do the normal .NET runtimes
     [Fact]
     [Trait("Category", "MultiTFM")]
@@ -235,7 +245,7 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
     }*/
 
     private static string[] GetFrameworks = { "net9.0", "net8.0", "net7.0", "net6.0" };
-    
+
     private static IEnumerable<object[]> GetLanguages() => Enum.GetValues<DotNetLanguage>().Select(lang => new object[] { lang });
 
 }
