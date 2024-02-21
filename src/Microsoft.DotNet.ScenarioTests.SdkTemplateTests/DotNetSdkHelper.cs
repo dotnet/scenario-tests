@@ -262,6 +262,68 @@ internal class DotNetSdkHelper
         ExecuteCmd($"add reference {classDirectory}", projectDirectory);
     }
 
+    public void ExecuteWorkloadInstall(string projectDirectory, string workloadIds)
+    {
+        ExecuteCmd($"workload install {workloadIds} --skip-manifest-update", projectDirectory);
+    }
+
+    public string ExecuteWorkloadList(string projectDirectory, string workloadIds, bool shouldBeInstalled, 
+        string originalSource = "", bool firstRun = false)
+    {
+        ExecuteCmd($"workload list", projectDirectory, additionalProcessConfigCallback: processConfigCallback);
+
+        void processConfigCallback(Process process)
+        {
+            string output = "";
+            process.OutputDataReceived += new DataReceivedEventHandler((sender, e) =>
+            {
+                if (e.Data is null)
+                {
+                    return;
+                }
+
+                output += e.Data;
+                if (!output.Contains("find additional workloads to install."))
+                {
+                    return;
+                }
+
+                if (output.Contains(workloadIds))
+                {
+                    if (!shouldBeInstalled)
+                    {
+                        if (firstRun)
+                        {
+                            originalSource = output;
+                        }
+                        else if(output != originalSource)
+                        {
+                            Console.WriteLine("output is " + output);
+                            Console.WriteLine("originalSource is " + originalSource);
+                            throw new Exception($"{workloadIds} shouldn't be installed but was found.");
+                        }
+                    }
+                    Console.WriteLine($"{workloadIds} is installed");
+                }
+                else
+                {
+                    if (shouldBeInstalled)
+                    {
+                        throw new Exception($"{workloadIds} should be installed but wasn't found.");
+                    }
+                    Console.WriteLine($"{workloadIds} is not installed");
+                }
+            });
+        }
+
+        return originalSource;
+    }
+
+    public void ExecuteWorkloadUninstall(string projectDirectory, string workloadIds)
+    {
+        ExecuteCmd($"workload uninstall {workloadIds}", projectDirectory);
+    }
+
     public void ExecuteAddMultiTFM(string projectName, string projectDirectory, DotNetLanguage language, string[] frameworks)
     {
         string extension;
