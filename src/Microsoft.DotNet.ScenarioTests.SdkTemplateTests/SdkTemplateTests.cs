@@ -212,9 +212,28 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
     public void VerifyWorkloadCmd()
     {
         var newTest = new DotnetWorkloadTest(
-            nameof(SdkTemplateTest), _scenarioTestInput.TargetRid, 
-            DotNetSdkActions.Workload);
+            nameof(SdkTemplateTest), _scenarioTestInput.TargetRid,
+            DotNetSdkActions.FullWorkloadTest);
+        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot, "wasm-tools");
+    }
+
+    [Fact]
+    [Trait("Category", "Workload")]
+    [Trait("Category", "InProgress")]
+    public void VerifyAspireTemplate()
+    {
+        var setup = new DotnetWorkloadTest(
+            nameof(SdkTemplateTest), _scenarioTestInput.TargetRid,
+            DotNetSdkActions.WorkloadInstall);
+        setup.Execute(_sdkHelper, _scenarioTestInput.TestRoot, "aspire");
+        var newTest = new SdkTemplateTest(
+            nameof(SdkTemplateTest), DotNetLanguage.CSharp, _scenarioTestInput.TargetRid, DotNetSdkTemplate.Aspire,
+            DotNetSdkActions.Build | DotNetSdkActions.Publish);
         newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
+        var cleanup = new DotnetWorkloadTest(
+            nameof(SdkTemplateTest), _scenarioTestInput.TargetRid,
+            DotNetSdkActions.WorkloadUninstall);
+        cleanup.Execute(_sdkHelper, _scenarioTestInput.TestRoot, "aspire");
     }
 
     [Fact]
