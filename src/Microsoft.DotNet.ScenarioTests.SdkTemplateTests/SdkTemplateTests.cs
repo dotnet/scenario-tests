@@ -197,6 +197,26 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
         newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
     }
 
+    [Theory]
+    [InlineData(DotNetLanguage.CSharp)]
+    public void VerifyRazorTemplate(DotNetLanguage language)
+    {
+        var newTest = new SdkTemplateTest(
+            nameof(SdkTemplateTest), language, _scenarioTestInput.TargetRid, DotNetSdkTemplate.Razor,
+            DotNetSdkActions.Build | DotNetSdkActions.Run | DotNetSdkActions.Publish);
+        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
+    }
+
+    [Fact]
+    [Trait("Category", "Workload")]
+    public void VerifyWorkloadCmd()
+    {
+        var newTest = new DotnetWorkloadTest(
+            nameof(SdkTemplateTest), _scenarioTestInput.TargetRid, 
+            DotNetSdkActions.Workload);
+        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
+    }
+
     [Fact]
     [Trait("Category", "Offline")]
     public void VerifyPreMadeSolution()
