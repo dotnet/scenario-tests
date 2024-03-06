@@ -298,12 +298,12 @@ internal class DotNetSdkHelper
                         }
                         else if(output != originalSource)
                         {
-                            Console.WriteLine("output is " + output);
-                            Console.WriteLine("originalSource is " + originalSource);
+                            OutputHelper.WriteLine("output is " + output);
+                            OutputHelper.WriteLine("originalSource is " + originalSource);
                             throw new Exception($"{workloadIds} shouldn't be installed but was found.");
                         }
                     }
-                    Console.WriteLine($"{workloadIds} is installed");
+                    OutputHelper.WriteLine($"{workloadIds} is installed");
                 }
                 else
                 {
@@ -311,7 +311,7 @@ internal class DotNetSdkHelper
                     {
                         throw new Exception($"{workloadIds} should be installed but wasn't found.");
                     }
-                    Console.WriteLine($"{workloadIds} is not installed");
+                    OutputHelper.WriteLine($"{workloadIds} is not installed");
                 }
             });
         }
@@ -370,8 +370,8 @@ internal class DotNetSdkHelper
             }
             catch (XPathException e)
             {
-                Console.WriteLine("Unable to find node");
-                Console.WriteLine(e.Message);
+                OutputHelper.WriteLine("Unable to find node");
+                OutputHelper.WriteLine(e.Message);
                 throw;
             }
         }
@@ -390,7 +390,7 @@ internal class DotNetSdkHelper
         {
             string targetPath = Path.Combine(projectDirectory, file.Name);
             file.CopyTo(targetPath);
-            Console.WriteLine($"Copying {file.Name} to {targetPath}");
+            OutputHelper.WriteLine($"Copying {file.Name} to {targetPath}");
         }
         if (recursive)
         {
