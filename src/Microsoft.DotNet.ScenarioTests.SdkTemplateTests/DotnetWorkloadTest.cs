@@ -20,22 +20,30 @@ internal class DotnetWorkloadTest
         TargetRid = targetRid;
     }
 
-    internal void Execute(DotNetSdkHelper dotNetHelper, string testRoot)
+    internal void Execute(DotNetSdkHelper dotNetHelper, string testRoot, string workloadID)
     {
         string projectName = $"{ScenarioName}_Workload_{Commands.ToString()}";
         string projectDirectory = Path.Combine(testRoot, projectName);
 
         Directory.CreateDirectory(projectDirectory);
 
-        if (Commands.HasFlag(DotNetSdkActions.Workload))
+        if (Commands.HasFlag(DotNetSdkActions.FullWorkloadTest))
         {
             string originalSource = "";
             //running workload list before install to see if present from another source
-            originalSource = dotNetHelper.ExecuteWorkloadList(projectDirectory, "wasm-tools", false, firstRun: true);
-            dotNetHelper.ExecuteWorkloadInstall(projectDirectory, "wasm-tools");
-            dotNetHelper.ExecuteWorkloadList(projectDirectory, "wasm-tools", true, originalSource);
-            dotNetHelper.ExecuteWorkloadUninstall(projectDirectory, "wasm-tools");
-            dotNetHelper.ExecuteWorkloadList(projectDirectory, "wasm-tools", false, originalSource);
+            originalSource = dotNetHelper.ExecuteWorkloadList(projectDirectory, workloadID, false, firstRun: true);
+            dotNetHelper.ExecuteWorkloadInstall(projectDirectory, workloadID);
+            dotNetHelper.ExecuteWorkloadList(projectDirectory, workloadID, true, originalSource);
+            dotNetHelper.ExecuteWorkloadUninstall(projectDirectory, workloadID);
+            dotNetHelper.ExecuteWorkloadList(projectDirectory, workloadID, false, originalSource);
+        }
+        if (Commands.HasFlag(DotNetSdkActions.WorkloadInstall))
+        {
+            dotNetHelper.ExecuteWorkloadInstall(projectDirectory, workloadID);
+        }
+        if (Commands.HasFlag(DotNetSdkActions.WorkloadUninstall))
+        {
+            dotNetHelper.ExecuteWorkloadUninstall(projectDirectory, workloadID);
         }
     }
 }
