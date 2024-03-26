@@ -219,7 +219,6 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
 
     [Fact]
     [Trait("Category", "Workload")]
-    [Trait("Category", "InProgress")]
     public void VerifyAspireTemplate()
     {
         var setup = new DotnetWorkloadTest(
@@ -234,6 +233,44 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
             nameof(SdkTemplateTest), _scenarioTestInput.TargetRid,
             DotNetSdkActions.WorkloadUninstall);
         cleanup.Execute(_sdkHelper, _scenarioTestInput.TestRoot, "aspire");
+    }
+
+    [Fact]
+    [Trait("Category", "Workload")]
+    //[Trait("Category", "InProgress")]
+    public void VerifyMaccatalystTemplate()
+    {
+        var setup = new DotnetWorkloadTest(
+            nameof(SdkTemplateTest), _scenarioTestInput.TargetRid,
+            DotNetSdkActions.WorkloadInstall);
+        setup.Execute(_sdkHelper, _scenarioTestInput.TestRoot, "maui-desktop");
+        var newTest = new SdkTemplateTest(
+            nameof(SdkTemplateTest), DotNetLanguage.CSharp, _scenarioTestInput.TargetRid, DotNetSdkTemplate.maccatalyst,
+            DotNetSdkActions.Build | DotNetSdkActions.Publish | DotNetSdkActions.Run);
+        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
+        var cleanup = new DotnetWorkloadTest(
+            nameof(SdkTemplateTest), _scenarioTestInput.TargetRid,
+            DotNetSdkActions.WorkloadUninstall);
+        cleanup.Execute(_sdkHelper, _scenarioTestInput.TestRoot, "maui-desktop");
+    }
+
+    [Fact]
+    [Trait("Category", "Workload")]
+    [Trait("Category", "InProgress")]
+    public void VerifyMauiDesktopWorkload()
+    {
+        var setup = new DotnetWorkloadTest(
+            nameof(SdkTemplateTest), _scenarioTestInput.TargetRid,
+            DotNetSdkActions.WorkloadInstall);
+        setup.Execute(_sdkHelper, _scenarioTestInput.TestRoot, "maui");
+        var newTest = new SdkTemplateTest(
+            nameof(SdkTemplateTest), DotNetLanguage.CSharp, _scenarioTestInput.TargetRid, DotNetSdkTemplate.maui,
+            DotNetSdkActions.Build | DotNetSdkActions.Publish);
+        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
+        var cleanup = new DotnetWorkloadTest(
+            nameof(SdkTemplateTest), _scenarioTestInput.TargetRid,
+            DotNetSdkActions.WorkloadUninstall);
+        cleanup.Execute(_sdkHelper, _scenarioTestInput.TestRoot, "maui");
     }
 
     [Fact]
