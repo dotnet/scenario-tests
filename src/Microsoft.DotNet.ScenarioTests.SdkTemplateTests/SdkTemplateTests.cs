@@ -237,7 +237,8 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
 
     [Fact]
     [Trait("Category", "Workload")]
-    //[Trait("Category", "InProgress")]
+    [Trait("Category", "InProgress")]
+    [Trait("SkipIfPlatform", "LINUX")]
     public void VerifyMaccatalystTemplate()
     {
         var setup = new DotnetWorkloadTest(
@@ -257,6 +258,7 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
     [Fact]
     [Trait("Category", "Workload")]
     [Trait("Category", "InProgress")]
+    [Trait("SkipIfPlatform", "LINUX")]
     public void VerifyMauiDesktopWorkload()
     {
         var setup = new DotnetWorkloadTest(
