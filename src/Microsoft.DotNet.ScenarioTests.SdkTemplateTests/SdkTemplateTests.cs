@@ -239,6 +239,7 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
     [Trait("Category", "Workload")]
     [Trait("Category", "InProgress")]
     [Trait("SkipIfPlatform", "LINUX")]
+    [Trait("SkipIfPlatform", "OSX")]
     public void VerifyMaccatalystTemplate()
     {
         var setup = new DotnetWorkloadTest(
