@@ -237,7 +237,6 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
 
     [Fact]
     [Trait("Category", "Workload")]
-    [Trait("Category", "InProgress")]
     [Trait("SkipIfPlatform", "LINUX")]
     [Trait("SkipIfPlatform", "OSX")]
     public void VerifyMaccatalystTemplate()
@@ -255,26 +254,6 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
             DotNetSdkActions.WorkloadUninstall);
         cleanup.Execute(_sdkHelper, _scenarioTestInput.TestRoot, "maui-desktop");
     }
-    /*
-    [Fact]
-    [Trait("Category", "Workload")]
-    [Trait("Category", "InProgress")]
-    [Trait("SkipIfPlatform", "LINUX")]
-    public void VerifyMauiDesktopWorkload()
-    {
-        var setup = new DotnetWorkloadTest(
-            nameof(SdkTemplateTest), _scenarioTestInput.TargetRid,
-            DotNetSdkActions.WorkloadInstall);
-        setup.Execute(_sdkHelper, _scenarioTestInput.TestRoot, "maui");
-        var newTest = new SdkTemplateTest(
-            nameof(SdkTemplateTest), DotNetLanguage.CSharp, _scenarioTestInput.TargetRid, DotNetSdkTemplate.maui,
-            DotNetSdkActions.Build | DotNetSdkActions.Publish);
-        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
-        var cleanup = new DotnetWorkloadTest(
-            nameof(SdkTemplateTest), _scenarioTestInput.TargetRid,
-            DotNetSdkActions.WorkloadUninstall);
-        cleanup.Execute(_sdkHelper, _scenarioTestInput.TestRoot, "maui");
-    }*/
 
     [Fact]
     [Trait("Category", "Offline")]
