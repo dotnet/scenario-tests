@@ -43,10 +43,6 @@
   <!-- Override the test target to run the test harness as a separate executable against dotnet SDK used to run these tests. -->
   <Target Name="Test"
           DependsOnTargets="CleanTestRoot;CreateDirectoryBuildFiles">
-    <ItemGroup>
-      <_DotNetPath Include="$(DotNetRoot)sdk/**/dotnet.dll" />
-    </ItemGroup>
-
     <PropertyGroup>
       <!-- Dotnet root typically ends in a \. Trim this to avoid issues with Exec -->
       <TestArgs>--dotnet-root "$(DotNetRoot.TrimEnd('\'))"</TestArgs>
@@ -54,7 +50,7 @@
       <TestArgs>$(TestArgs) --test-root "$(TestRoot)"</TestArgs>
       <TestArgs>$(TestArgs) $(AdditionalTestArgs)</TestArgs>
 
-      <_MSBuildSdksDir>/%(_DotNetPath.Directory)Sdks</_MSBuildSdksDir>
+      <_MSBuildSdksDir>$(DotNetRoot)sdk/$(NETCoreSdkVersion)/Sdks</_MSBuildSdksDir>
     </PropertyGroup>
 
     <ItemGroup>
