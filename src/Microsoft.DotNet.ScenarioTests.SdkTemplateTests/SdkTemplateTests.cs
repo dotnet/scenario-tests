@@ -84,7 +84,8 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
         newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
     }
     
-    [Theory]
+    // Disabled due to https://github.com/dotnet/source-build/issues/4361
+    //[Theory]
     [InlineData(DotNetLanguage.CSharp)]
     [InlineData(DotNetLanguage.VB)]
     [Trait("Category", "Offline")]
