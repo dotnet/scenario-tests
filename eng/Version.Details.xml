@@ -28,9 +28,9 @@
       <SourceBuild RepoName="arcade" ManagedOnly="true" />
     </Dependency>
     <!-- Intermediate is necessary for source build. -->
-    <Dependency Name="Microsoft.SourceBuild.Intermediate.source-build-reference-packages" Version="9.0.0-alpha.1.24278.2">
+    <Dependency Name="Microsoft.SourceBuild.Intermediate.source-build-reference-packages" Version="9.0.0-alpha.1.24365.1">
       <Uri>https://github.com/dotnet/source-build-reference-packages</Uri>
-      <Sha>87ebd07371adfe1d8140889c33da692eb2134f1a</Sha>
+      <Sha>4d5ba7206ed1d56612b36560334494652ed486b2</Sha>
       <SourceBuild RepoName="source-build-reference-packages" ManagedOnly="true" />
     </Dependency>
     <!-- Intermediate is necessary for source build. -->
