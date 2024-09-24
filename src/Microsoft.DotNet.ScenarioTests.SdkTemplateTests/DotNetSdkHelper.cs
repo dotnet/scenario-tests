@@ -17,7 +17,7 @@ internal class DotNetSdkHelper
     public string? SdkVersion { get; set; }
     public string DotNetExecutablePath { get =>
             RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? Path.Combine(DotNetRoot, "dotnet.exe") : Path.Combine(DotNetRoot, "dotnet"); }
-
+    public bool IsMonoRuntime { get; }
     private ITestOutputHelper OutputHelper { get; }
 
     public DotNetSdkHelper(ITestOutputHelper outputHelper, string dotnetRoot, string? sdkVersion)
@@ -25,6 +25,27 @@ internal class DotNetSdkHelper
         OutputHelper = outputHelper;
         DotNetRoot = dotnetRoot;
         SdkVersion = sdkVersion;
+        IsMonoRuntime = DetermineIsMonoRuntime(dotnetRoot);
+    }
+
+    private static bool DetermineIsMonoRuntime(string dotnetRoot)
+    {
+        string sharedFrameworkRoot = Path.Combine(dotnetRoot, "shared", "Microsoft.NETCore.App");
+        if (!Directory.Exists(sharedFrameworkRoot))
+        {
+            return false;
+        }
+
+        string? version = Directory.GetDirectories(sharedFrameworkRoot).FirstOrDefault();
+        if (version is null)
+        {
+            return false;
+        }
+
+        string sharedFramework = Path.Combine(sharedFrameworkRoot, version);
+
+        // Check the presence of one of the mono header files.
+        return File.Exists(Path.Combine(sharedFramework, "mono-gc.h"));
     }
 
     private void ExecuteCmd(string args, string workingDirectory, Action<Process>? additionalProcessConfigCallback = null, int expectedExitCode = 0, int millisecondTimeout = -1)
@@ -105,7 +126,7 @@ internal class DotNetSdkHelper
         return projectDirectory;
     }
 
-    public void ExecutePublish(string projectDirectory, bool? selfContained = null, string? rid = null, bool trimmed = false, bool readyToRun = false, string[]? frameworks = null)
+    public void ExecutePublish(string projectDirectory, string? rid = null, bool? selfContained = null, bool trimmed = false, bool readyToRun = false, bool? aot = false, string[]? frameworks = null)
     {
         string options = string.Empty;
         string binlogDifferentiator = string.Empty;
@@ -131,6 +152,15 @@ internal class DotNetSdkHelper
                     options += " /p:PublishReadyToRun=true";
                     binlogDifferentiator += "-R2R";
                 }
+            }
+        }
+
+        if (aot.HasValue)
+        {
+            options += $" /p:PublishAot={aot.Value.ToString().ToLowerInvariant()}";
+            if (aot.Value)
+            {
+                binlogDifferentiator += "-aot";
             }
         }
 

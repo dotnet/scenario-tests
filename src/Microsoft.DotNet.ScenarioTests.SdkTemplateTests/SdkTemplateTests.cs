@@ -209,6 +209,15 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
     }
 
     [Fact]
+    public void VerifyWebTemplatePublishAot()
+    {
+        var newTest = new SdkTemplateTest(
+            nameof(SdkTemplateTests) + "Aot", DotNetLanguage.CSharp, _scenarioTestInput.TargetRid, DotNetSdkTemplate.Web,
+            DotNetSdkActions.PublishAot);
+        newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
+    }
+
+    [Fact]
     [Trait("Category", "Workload")]
     public void VerifyWorkloadCmd()
     {

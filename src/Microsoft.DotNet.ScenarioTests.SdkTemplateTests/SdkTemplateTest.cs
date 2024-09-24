@@ -29,6 +29,8 @@ public class SdkTemplateTest
         string projectName = $"{ScenarioName}_{Template}_{Language}";
         string customNewArgs = Template.IsAspNetCore() && NoHttps ? "--no-https" : string.Empty;
         string projectDirectory = Path.Combine(testRoot, projectName);
+        string portableRid = $"linux-{TargetArchitecture}";
+        bool isNonPortable = TargetRid != portableRid;
 
         if (PreMadeSolution == null)
         {
@@ -86,12 +88,20 @@ public class SdkTemplateTest
         if (Commands.HasFlag(DotNetSdkActions.PublishComplex))
         {
             dotNetHelper.ExecutePublish(projectDirectory, selfContained: false);        
-            dotNetHelper.ExecutePublish(projectDirectory, selfContained: true, TargetRid);
-            dotNetHelper.ExecutePublish(projectDirectory, selfContained: true, $"linux-{TargetArchitecture}");
+            dotNetHelper.ExecutePublish(projectDirectory, TargetRid, selfContained: true);
+            dotNetHelper.ExecutePublish(projectDirectory, $"linux-{TargetArchitecture}", selfContained: true);
         }
         if (Commands.HasFlag(DotNetSdkActions.PublishR2R))
         {
-            dotNetHelper.ExecutePublish(projectDirectory, selfContained: true, $"linux-{TargetArchitecture}", trimmed: true, readyToRun: true);
+            dotNetHelper.ExecutePublish(projectDirectory, $"linux-{TargetArchitecture}", selfContained: true, trimmed: true, readyToRun: true);
+        }
+        if (Commands.HasFlag(DotNetSdkActions.PublishAot))
+        {
+            // Non-portable bundled AOT Compiler.
+            if (isNonPortable && !dotNetHelper.IsMonoRuntime)
+            {
+                dotNetHelper.ExecutePublish(projectDirectory, TargetRid, aot: true);
+            }
         }
         if (Commands.HasFlag(DotNetSdkActions.Test))
         {
