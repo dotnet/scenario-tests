@@ -29,8 +29,6 @@ public class SdkTemplateTest
         string projectName = $"{ScenarioName}_{Template}_{Language}";
         string customNewArgs = Template.IsAspNetCore() && NoHttps ? "--no-https" : string.Empty;
         string projectDirectory = Path.Combine(testRoot, projectName);
-        string portableRid = $"linux-{TargetArchitecture}";
-        bool isNonPortable = TargetRid != portableRid;
 
         if (PreMadeSolution == null)
         {
@@ -97,11 +95,7 @@ public class SdkTemplateTest
         }
         if (Commands.HasFlag(DotNetSdkActions.PublishAot))
         {
-            // Non-portable bundled AOT Compiler.
-            if (isNonPortable && !dotNetHelper.IsMonoRuntime)
-            {
-                dotNetHelper.ExecutePublish(projectDirectory, TargetRid, aot: true);
-            }
+            dotNetHelper.ExecutePublish(projectDirectory, TargetRid, aot: true);
         }
         if (Commands.HasFlag(DotNetSdkActions.Test))
         {

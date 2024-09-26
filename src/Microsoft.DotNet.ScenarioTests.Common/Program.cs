@@ -234,6 +234,8 @@ namespace ScenarioTests
 
             filters.ExcludedTraits.Add("SkipIfPlatform", new List<string>() {$"{platform}"});
 
+            filters.ExcludedTraits.Add("SkipIfBuild", CreateBuildTraits());
+
             Dictionary<string, List<string>> includedTraitsMap = ParseTraitKeyValuePairs(includedTraits);
             foreach (KeyValuePair<string, List<string>> kvp in includedTraitsMap)
             {
@@ -241,6 +243,50 @@ namespace ScenarioTests
             }
 
             return filters;
+        }
+
+        private static List<string> CreateBuildTraits()
+        {
+            List<string> buildTraits = new();
+
+            ScenarioTestFixture fixture = new();
+
+            // Mono
+            if (DetermineIsMonoRuntime(fixture.DotNetRoot))
+            {
+                buildTraits.Add("Mono");
+            }
+
+            // Portable
+            int archSeparatorPos = fixture.TargetRid.LastIndexOf('-');
+            string ridWithoutArch = fixture.TargetRid.Substring(0, archSeparatorPos != -1 ? archSeparatorPos : 0);
+            string[] portableRids = [ "linux", "linux-musl" ];
+            if (Array.IndexOf(portableRids, ridWithoutArch) != -1)
+            {
+                buildTraits.Add("Portable");
+            }
+
+            return buildTraits;
+        }
+
+        private static bool DetermineIsMonoRuntime(string dotnetRoot)
+        {
+            string sharedFrameworkRoot = Path.Combine(dotnetRoot, "shared", "Microsoft.NETCore.App");
+            if (!Directory.Exists(sharedFrameworkRoot))
+            {
+                return false;
+            }
+
+            string? version = Directory.GetDirectories(sharedFrameworkRoot).FirstOrDefault();
+            if (version is null)
+            {
+                return false;
+            }
+
+            string sharedFramework = Path.Combine(sharedFrameworkRoot, version);
+
+            // Check the presence of one of the mono header files.
+            return File.Exists(Path.Combine(sharedFramework, "mono-gc.h"));
         }
 
         private static Dictionary<string, List<string>> ParseTraitKeyValuePairs(IList<string> excludedTraits)

@@ -25,27 +25,6 @@ internal class DotNetSdkHelper
         OutputHelper = outputHelper;
         DotNetRoot = dotnetRoot;
         SdkVersion = sdkVersion;
-        IsMonoRuntime = DetermineIsMonoRuntime(dotnetRoot);
-    }
-
-    private static bool DetermineIsMonoRuntime(string dotnetRoot)
-    {
-        string sharedFrameworkRoot = Path.Combine(dotnetRoot, "shared", "Microsoft.NETCore.App");
-        if (!Directory.Exists(sharedFrameworkRoot))
-        {
-            return false;
-        }
-
-        string? version = Directory.GetDirectories(sharedFrameworkRoot).FirstOrDefault();
-        if (version is null)
-        {
-            return false;
-        }
-
-        string sharedFramework = Path.Combine(sharedFrameworkRoot, version);
-
-        // Check the presence of one of the mono header files.
-        return File.Exists(Path.Combine(sharedFramework, "mono-gc.h"));
     }
 
     private void ExecuteCmd(string args, string workingDirectory, Action<Process>? additionalProcessConfigCallback = null, int expectedExitCode = 0, int millisecondTimeout = -1)
