@@ -156,7 +156,7 @@ namespace ScenarioTests
             discoverer.Find(false, discoverySink, TestFrameworkOptions.ForDiscovery(assemblyConfig));
             discoverySink.Finished.WaitOne();
 
-            XunitFilters filters = CreateFilters(noTraits, traits, offlineOnly, platform);
+            XunitFilters filters = CreateFilters(noTraits, traits, offlineOnly, platform, dotnetRoot, targetRid);
 
             var filteredTestCases = discoverySink.TestCases.Where(filters.Filter).ToList();
 
@@ -217,7 +217,7 @@ namespace ScenarioTests
         }
 
 
-        private static XunitFilters CreateFilters(IList<string> excludedTraits, IList<string> includedTraits, bool offlineOnly, OSPlatform platform)
+        private static XunitFilters CreateFilters(IList<string> excludedTraits, IList<string> includedTraits, bool offlineOnly, OSPlatform platform, string dotnetRoot, string targetRid)
         {
             XunitFilters filters = new XunitFilters();
 
@@ -234,7 +234,7 @@ namespace ScenarioTests
 
             filters.ExcludedTraits.Add("SkipIfPlatform", new List<string>() {$"{platform}"});
 
-            filters.ExcludedTraits.Add("SkipIfBuild", CreateBuildTraits());
+            filters.ExcludedTraits.Add("SkipIfBuild", CreateBuildTraits(dotnetRoot, targetRid));
 
             Dictionary<string, List<string>> includedTraitsMap = ParseTraitKeyValuePairs(includedTraits);
             foreach (KeyValuePair<string, List<string>> kvp in includedTraitsMap)
@@ -245,21 +245,19 @@ namespace ScenarioTests
             return filters;
         }
 
-        private static List<string> CreateBuildTraits()
+        private static List<string> CreateBuildTraits(string dotnetRoot, string targetRid)
         {
             List<string> buildTraits = new();
 
-            ScenarioTestFixture fixture = new();
-
             // Mono
-            if (DetermineIsMonoRuntime(fixture.DotNetRoot))
+            if (DetermineIsMonoRuntime(dotnetRoot))
             {
                 buildTraits.Add("Mono");
             }
 
             // Portable
-            int archSeparatorPos = fixture.TargetRid.LastIndexOf('-');
-            string ridWithoutArch = fixture.TargetRid.Substring(0, archSeparatorPos != -1 ? archSeparatorPos : 0);
+            int archSeparatorPos = targetRid.LastIndexOf('-');
+            string ridWithoutArch = targetRid.Substring(0, archSeparatorPos != -1 ? archSeparatorPos : 0);
             string[] portableRids = [ "linux", "linux-musl" ];
             if (Array.IndexOf(portableRids, ridWithoutArch) != -1)
             {

@@ -17,7 +17,6 @@ internal class DotNetSdkHelper
     public string? SdkVersion { get; set; }
     public string DotNetExecutablePath { get =>
             RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? Path.Combine(DotNetRoot, "dotnet.exe") : Path.Combine(DotNetRoot, "dotnet"); }
-    public bool IsMonoRuntime { get; }
     private ITestOutputHelper OutputHelper { get; }
 
     public DotNetSdkHelper(ITestOutputHelper outputHelper, string dotnetRoot, string? sdkVersion)
