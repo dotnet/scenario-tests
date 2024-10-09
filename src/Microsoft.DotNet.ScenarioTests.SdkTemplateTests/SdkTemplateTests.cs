@@ -38,7 +38,7 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
     public void VerifyConsoleTemplateComplexPortable(DotNetLanguage language)
     {
         var newTest = new SdkTemplateTest(
-            nameof(SdkTemplateTests) + "Complex", language, _scenarioTestInput.PortableRid, DotNetSdkTemplate.Console,
+            nameof(SdkTemplateTests) + "ComplexPortable", language, _scenarioTestInput.PortableRid, DotNetSdkTemplate.Console,
             DotNetSdkActions.Build | DotNetSdkActions.Run | DotNetSdkActions.PublishComplex | DotNetSdkActions.PublishR2R);
         newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
     }
