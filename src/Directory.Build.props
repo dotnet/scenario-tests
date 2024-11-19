@@ -18,6 +18,8 @@
     <UseAppHost>true</UseAppHost>
     <IsPackable>true</IsPackable>
     <PackAsTool>true</PackAsTool>
+    <!-- Allow test apps to be invoked with a newer SDK. -->
+    <RollForward>Major</RollForward>
   </PropertyGroup>
 
   <ItemGroup>
