@@ -5,6 +5,6 @@
     "areaPath": "DevDiv\\NET Fundamentals\\Infrastructure\\Arcade\\SDL",
     "iterationPath": "DevDiv",
     "notificationAliases": [ "dnceng@microsoft.com" ],
-    "repositoryName":"dotnet-scenario-tests",
-    "codebaseName": "dotnet-scenario-tests"
+    "repositoryName":"scenario-tests",
+    "codebaseName": "scenario-tests"
 }
