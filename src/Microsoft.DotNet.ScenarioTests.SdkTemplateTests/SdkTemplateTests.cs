@@ -43,7 +43,7 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
         string portableRid = _scenarioTestInput.PortableRid ?? $"linux-{_scenarioTestInput.TargetArchitecture}";
 
         var newTest = new SdkTemplateTest(
-            nameof(SdkTemplateTests) + "ComplexPortable", language, _scenarioTestInput.PortableRid, DotNetSdkTemplate.Console,
+            nameof(SdkTemplateTests) + "ComplexPortable", language, portableRid, DotNetSdkTemplate.Console,
             DotNetSdkActions.Build | DotNetSdkActions.Run | DotNetSdkActions.PublishComplex | DotNetSdkActions.PublishR2R);
         newTest.Execute(_sdkHelper, _scenarioTestInput.TestRoot);
     }

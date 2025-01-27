@@ -42,6 +42,6 @@ public class ScenarioTestFixture
     public string DotNetRoot { get; set; }
     public string TestRoot { get; set; }
     public string TargetRid { get; set; }
-    public string TargetArchitecture { get => TargetRid!.Split('-').Last(); }
+    public string TargetArchitecture { get => TargetRid.Split('-').Last(); }
     public string? PortableRid { get; set; }
 }
