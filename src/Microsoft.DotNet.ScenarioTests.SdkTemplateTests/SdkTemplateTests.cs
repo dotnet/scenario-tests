@@ -37,6 +37,9 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
     [Trait("SkipIfBuild", "CommunityArchitecture")] // Portable assets are not available for community architectures.
     public void VerifyConsoleTemplateComplexPortable(DotNetLanguage language)
     {
+        // This uses the wrong portable RID for non linux platforms when running the tests without supplying
+        // a portable RID. The VMR will supply one so the incorrectness applies to the test execution inside the
+        // scenario-tests repository only.
         string portableRid = _scenarioTestInput.PortableRid ?? $"linux-{_scenarioTestInput.TargetArchitecture}";
 
         var newTest = new SdkTemplateTest(
