@@ -37,6 +37,12 @@ public class SdkTemplateTests : IClassFixture<ScenarioTestFixture>
     [Trait("SkipIfBuild", "CommunityArchitecture")] // Portable assets are not available for community architectures.
     public void VerifyConsoleTemplateComplexPortable(DotNetLanguage language)
     {
+        // Skip if a portable RID isn't provided.
+        if (_scenarioTestInput.PortableRid is null)
+        {
+            return;
+        }
+
         var newTest = new SdkTemplateTest(
             nameof(SdkTemplateTests) + "ComplexPortable", language, _scenarioTestInput.PortableRid, DotNetSdkTemplate.Console,
             DotNetSdkActions.Build | DotNetSdkActions.Run | DotNetSdkActions.PublishComplex | DotNetSdkActions.PublishR2R);
