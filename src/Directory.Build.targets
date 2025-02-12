@@ -9,8 +9,8 @@
       <TestBinlogDir Condition="'$(TestBinlogDir)' == ''">$(ArtifactsTestResultsDir)</TestBinlogDir>
 
       <TestDotNetRoot Condition="'$(TestDotNetRoot)' == ''">$(DotNetRoot)</TestDotNetRoot>
-      <TestDotNetTool Condition="'$(OS)' == 'Windows_NT'">$(TestDotNetRoot)dotnet.exe</TestDotNetTool>
-      <TestDotNetTool Condition="'$(OS)' != 'Windows_NT'">$(TestDotNetRoot)dotnet</TestDotNetTool>
+      <TestDotNetTool Condition="'$(OS)' == 'Windows_NT'">$([MSBuild]::NormalizePath('$(TestDotNetRoot)', 'dotnet.exe'))</TestDotNetTool>
+      <TestDotNetTool Condition="'$(OS)' != 'Windows_NT'">$([MSBuild]::NormalizePath('$(TestDotNetRoot)', 'dotnet'))</TestDotNetTool>
 
       <TestArgs>--dotnet-root "$(TestDotNetRoot.TrimEnd('\'))"</TestArgs>
       <TestArgs>$(TestArgs) --test-root "$(TestRoot.TrimEnd('\'))"</TestArgs>
