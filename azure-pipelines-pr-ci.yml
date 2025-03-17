@@ -19,6 +19,35 @@ pr:
     - README.md
     - docs/*
 
+variables:
+- name: isSourceOnlyBuild
+  value: false
+
+- name: isSourceOnlyBuildLite
+  value: false
+
+- name: isScheduleTrigger
+  value: ${{ eq(variables['Build.Reason'], 'Schedule') }}
+
+- name: isPRTrigger
+  value: ${{ eq(variables['Build.Reason'], 'PullRequest') }}
+
+- name: skipComponentGovernanceDetection
+  value: true
+
+- name: Codeql.Enabled
+  value: false
+
+- template: /eng/common/templates/variables/pool-providers.yml@self
+
+resources:
+  repositories:
+  - repository: VMR
+    type: github
+    name: dotnet/dotnet
+    ref: refs/heads/main
+    endpoint: dotnet
+
 stages:
 - stage: build
   displayName: Build
@@ -85,3 +114,18 @@ stages:
           clean: true
         - script: eng/common/cibuild.sh --configuration $(_BuildConfig) --prepareMachine
           displayName: Build and Test
+
+- template: /src/sdk/eng/pipelines/templates/stages/vmr-build.yml@VMR
+  parameters:
+    isBuiltFromVmr: true
+    isSourceOnlyBuild: ${{ variables.isSourceOnlyBuild }}
+    ${{ if or(eq(variables.isScheduleTrigger, 'true'), contains(variables['Build.DefinitionName'], '-full')) }}:
+      scope: full
+    ${{ elseif eq(variables.isSourceOnlyBuildLite, 'true') }}:
+      scope: lite
+    ${{ elseif and(eq(variables.isPRTrigger, 'true'), eq(variables.isSourceOnlyBuild, 'true')) }}:
+      scope: ultralite
+    ${{ elseif and(eq(variables.isPRTrigger, 'true'), ne(variables.isSourceOnlyBuild, 'true')) }}:
+      scope: lite
+    ${{ else }}:
+      scope: full
