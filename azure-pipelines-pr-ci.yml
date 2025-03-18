@@ -19,6 +19,23 @@ pr:
     - README.md
     - docs/*
 
+variables:
+- name: skipComponentGovernanceDetection
+  value: true
+
+- name: Codeql.Enabled
+  value: false
+
+- template: /eng/common/templates/variables/pool-providers.yml@self
+
+resources:
+  repositories:
+  - repository: vmr
+    type: github
+    name: dotnet/dotnet
+    ref: refs/heads/main
+    endpoint: dotnet
+
 stages:
 - stage: build
   displayName: Build
@@ -85,3 +102,9 @@ stages:
           clean: true
         - script: eng/common/cibuild.sh --configuration $(_BuildConfig) --prepareMachine
           displayName: Build and Test
+
+- template: /src/sdk/eng/pipelines/templates/stages/vmr-build.yml@vmr
+  parameters:
+    isBuiltFromVmr: false
+    isSourceOnlyBuild: false
+    scope: lite
