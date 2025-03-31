@@ -40,7 +40,7 @@ stages:
 - stage: build
   displayName: Build
   jobs:
-  - template: /eng/common/templates/jobs/jobs.yml
+  - template: /eng/common/templates/jobs/jobs.yml@self
     parameters:
       artifacts:
         publish:
