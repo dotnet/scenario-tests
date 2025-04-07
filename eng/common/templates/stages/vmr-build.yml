@@ -1,0 +1,23 @@
+variables:
+- name: skipComponentGovernanceDetection
+  value: true
+
+- name: Codeql.Enabled
+  value: false
+
+- template: /eng/common/templates/variables/pool-providers.yml@self
+
+resources:
+  repositories:
+  - repository: vmr
+    type: github
+    name: dotnet/dotnet
+    ref: refs/heads/main
+    endpoint: dotnet
+
+stages:
+- template: /src/sdk/eng/pipelines/templates/stages/vmr-build.yml@vmr
+  parameters:
+    isBuiltFromVmr: false
+    isSourceOnlyBuild: false
+    scope: lite
