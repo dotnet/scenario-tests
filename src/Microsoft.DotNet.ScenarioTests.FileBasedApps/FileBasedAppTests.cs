@@ -49,28 +49,8 @@ Console.WriteLine($""Current time: {DateTime.Now}"");";
             string argsTestDir = Path.Combine(baseTestDir, "AppWithArgs");
             Directory.CreateDirectory(argsTestDir);
             
-            string argsCsContent = @"using System;
-
-class Program
-{
-    static void Main(string[] args)
-    {
-        Console.WriteLine(""File-based app with arguments"");
-        Console.WriteLine($""Received {args.Length} arguments:"");
-        
-        for (int i = 0; i < args.Length; i++)
-        {
-            Console.WriteLine($""  arg[{i}]: {args[i]}"");
-        }
-        
-        if (args.Length == 0)
-        {
-            Console.WriteLine(""No arguments provided"");
-        }
-    }
-}";
-
-            string argsCsFile = _helper.CreateCsFile("AppWithArgs.cs", argsCsContent, argsTestDir);
+            string resourcesDir = Path.Combine(AppContext.BaseDirectory, "resources", "FileBasedApps");
+            string argsCsFile = Path.Combine(resourcesDir, "AppWithArgs.cs");
             string argsOutput = _helper.ExecuteRunFile(argsCsFile, argsTestDir);
             
             Assert.Contains("File-based app with arguments", argsOutput);
