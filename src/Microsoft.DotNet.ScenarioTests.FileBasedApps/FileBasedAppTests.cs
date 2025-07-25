@@ -68,25 +68,13 @@ Console.WriteLine($""Current time: {DateTime.Now}"");";
             string errorTestDir = Path.Combine(baseTestDir, "AppWithErrors");
             Directory.CreateDirectory(errorTestDir);
             
-            string errorCsContent = @"using System;
-
-class Program
-{
-    static void Main(string[] args)
-    {
-        Console.WriteLine(""This will cause a compilation error"");
-        // Missing semicolon to cause error
-        var x = ""test""
-    }
-}";
-
-            string errorCsFile = _helper.CreateCsFile("ErrorApp.cs", errorCsContent, errorTestDir);
+            string errorAppFile = Path.Combine(resourcesDir, "AppWithErrors.cs");
             
             // This should throw an exception due to compilation error
             bool exceptionThrown = false;
             try
             {
-                _helper.ExecuteRunFile(errorCsFile, errorTestDir);
+                _helper.ExecuteRunFile(errorAppFile, errorTestDir);
             }
             catch (Exception)
             {
@@ -140,28 +128,28 @@ class Program
             string searchOutput = _helper.ExecuteRunFile(packageSearchFile, packageSearchDir, millisecondTimeout: 120000);
 
             // Validate basic search output
-            if (!searchOutput.Contains("File-based app: Package Search Demo"))
-                throw new InvalidOperationException("Expected output not found: File-based app: Package Search Demo");
-            if (!searchOutput.Contains("Searching for package: Microsoft.NETCore.App.Ref"))
-                throw new InvalidOperationException("Expected output not found: Searching for package: Microsoft.NETCore.App.Ref");
-            if (!searchOutput.Contains("Package search completed."))
-                throw new InvalidOperationException("Expected output not found: Package search completed.");
+            if (!searchOutput.Contains("File-based app: Enhanced Package Search Demo"))
+                throw new InvalidOperationException("Expected output not found: File-based app: Enhanced Package Search Demo");
+            if (!searchOutput.Contains("Searching for packages matching:"))
+                throw new InvalidOperationException("Expected output not found: Searching for packages matching:");
+            if (!searchOutput.Contains("Package search and analysis completed."))
+                throw new InvalidOperationException("Expected output not found: Package search and analysis completed.");
             
             // Check if the package search was successful (may fail in offline environments)
-            if (searchOutput.Contains("Found package: Microsoft.NETCore.App.Ref"))
+            if (searchOutput.Contains("Found ") && searchOutput.Contains(" packages"))
             {
-                if (!searchOutput.Contains("Available versions:"))
-                    throw new InvalidOperationException("Expected output not found: Available versions:");
-                if (!searchOutput.Contains("Total versions found:"))
-                    throw new InvalidOperationException("Expected output not found: Total versions found:");
-                if (!searchOutput.Contains("Latest version:"))
-                    throw new InvalidOperationException("Expected output not found: Latest version:");
+                if (!searchOutput.Contains("Validating package content:"))
+                    throw new InvalidOperationException("Expected output not found: Validating package content:");
+                if (!searchOutput.Contains("Converting JSON data to XML"))
+                    throw new InvalidOperationException("Expected output not found: Converting JSON data to XML");
+                if (!searchOutput.Contains("Analysis completed"))
+                    throw new InvalidOperationException("Expected output not found: Analysis completed");
             }
             else
             {
-                // If network is not available, at least verify that the app attempted to make the request
-                if (!searchOutput.Contains("Querying:"))
-                    throw new InvalidOperationException("Expected output not found: Querying:");
+                // If network is not available, at least verify that the app attempted to execute dotnet package search
+                if (!searchOutput.Contains("Failed to execute dotnet package search") && !searchOutput.Contains("Error:"))
+                    throw new InvalidOperationException("Expected error message not found when network unavailable");
             }
 
             // Test 2: Package download and inspection functionality
