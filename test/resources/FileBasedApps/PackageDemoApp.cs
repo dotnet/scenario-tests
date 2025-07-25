@@ -7,7 +7,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 
-// Complex file-based app that uses dotnet package search, JSON/XML conversion, and LINQ queries
+// Complex file-based app that demonstrates package search, analysis, and project creation
 class Program
 {
     public class PackageInfo
@@ -23,9 +23,9 @@ class Program
 
     static async Task Main(string[] args)
     {
-        Console.WriteLine("File-based app: Enhanced Package Search Demo");
+        Console.WriteLine("File-based app: Package Demo with Project Creation");
         
-        string packageQuery = args.Length > 0 ? args[0] : "Microsoft.Extensions";
+        string packageQuery = "Microsoft.Extensions";
         Console.WriteLine($"Searching for packages matching: {packageQuery}");
         
         try
@@ -62,6 +62,13 @@ class Program
             // Step 6: Output formatted table sorted by download counts
             DisplayFormattedResults(analysisResults);
             
+            // Step 7: Find the package with most downloads and create a project
+            if (analysisResults.Any())
+            {
+                var mostDownloadedPackage = analysisResults.First(); // Already sorted by downloads
+                await CreateProjectWithMostDownloadedPackage(mostDownloadedPackage.Id, mostDownloadedPackage.Version);
+            }
+            
         }
         catch (Exception ex)
         {
@@ -69,7 +76,7 @@ class Program
             Console.WriteLine($"Stack trace: {ex.StackTrace}");
         }
         
-        Console.WriteLine("Package search and analysis completed.");
+        Console.WriteLine("Package demo completed.");
     }
 
     static async Task<string> ExecuteDotnetPackageSearch(string query)
@@ -285,5 +292,131 @@ class Program
         }
         
         Console.WriteLine(new string('=', 120));
+    }
+
+    static async Task CreateProjectWithMostDownloadedPackage(string packageId, string version)
+    {
+        Console.WriteLine($"\nCreating console project and adding most downloaded package: {packageId}");
+        
+        try
+        {
+            // Create a temporary directory for the new project
+            string projectDir = Path.Combine(Path.GetTempPath(), "PackageDemoProject_" + Guid.NewGuid().ToString("N")[..8]);
+            Directory.CreateDirectory(projectDir);
+            
+            Console.WriteLine($"Project directory: {projectDir}");
+            
+            try
+            {
+                // Step 1: Create a new console project
+                Console.WriteLine("Running: dotnet new console");
+                await ExecuteDotnetCommand("new console", projectDir);
+                
+                // Step 2: Add the most downloaded package
+                Console.WriteLine($"Running: dotnet add package {packageId}");
+                await ExecuteDotnetCommand($"add package {packageId}", projectDir);
+                
+                // Step 3: Verify project file was created and package was added
+                string projectFile = Path.Combine(projectDir, Path.GetFileName(projectDir) + ".csproj");
+                if (!File.Exists(projectFile))
+                {
+                    // Try default name
+                    projectFile = Directory.GetFiles(projectDir, "*.csproj").FirstOrDefault();
+                }
+                
+                if (File.Exists(projectFile))
+                {
+                    Console.WriteLine("Project file created successfully");
+                    string projectContent = await File.ReadAllTextAsync(projectFile);
+                    
+                    if (projectContent.Contains(packageId))
+                    {
+                        Console.WriteLine($"Package {packageId} successfully added to project");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Warning: Package {packageId} may not have been added properly");
+                    }
+                    
+                    // Show part of the project file
+                    Console.WriteLine("Project file content preview:");
+                    var lines = projectContent.Split('\n');
+                    for (int i = 0; i < Math.Min(10, lines.Length); i++)
+                    {
+                        Console.WriteLine($"  {lines[i]}");
+                    }
+                    if (lines.Length > 10)
+                    {
+                        Console.WriteLine("  ...");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Warning: Project file not found after creation");
+                }
+                
+                // Step 4: Try to build the project to ensure it's valid
+                Console.WriteLine("Running: dotnet build");
+                await ExecuteDotnetCommand("build", projectDir);
+                
+                Console.WriteLine("Project creation and package addition completed successfully");
+            }
+            finally
+            {
+                // Clean up the temporary project directory
+                if (Directory.Exists(projectDir))
+                {
+                    Directory.Delete(projectDir, true);
+                    Console.WriteLine("Temporary project directory cleaned up");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error creating project: {ex.Message}");
+        }
+    }
+
+    static async Task ExecuteDotnetCommand(string arguments, string workingDirectory)
+    {
+        try
+        {
+            var processInfo = new ProcessStartInfo
+            {
+                FileName = "dotnet",
+                Arguments = arguments,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                WorkingDirectory = workingDirectory
+            };
+
+            using var process = Process.Start(processInfo);
+            if (process == null)
+            {
+                throw new InvalidOperationException($"Failed to start dotnet process with arguments: {arguments}");
+            }
+
+            string output = await process.StandardOutput.ReadToEndAsync();
+            string error = await process.StandardError.ReadToEndAsync();
+            
+            await process.WaitForExitAsync();
+            
+            if (process.ExitCode != 0)
+            {
+                throw new InvalidOperationException($"dotnet {arguments} failed with exit code {process.ExitCode}. Error: {error}");
+            }
+
+            if (!string.IsNullOrEmpty(output))
+            {
+                Console.WriteLine($"Command output: {output.Trim()}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to execute dotnet {arguments}: {ex.Message}");
+            throw;
+        }
     }
 }

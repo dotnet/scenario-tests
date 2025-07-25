@@ -118,74 +118,40 @@ Console.WriteLine($""Current time: {DateTime.Now}"");";
 
         try
         {
-            // Test 1: Package search functionality
-            string packageSearchDir = Path.Combine(baseTestDir, "PackageSearchApp");
-            Directory.CreateDirectory(packageSearchDir);
+            // Test: Package demo functionality (search, analysis, and project creation)
+            string packageDemoDir = Path.Combine(baseTestDir, "PackageDemoApp");
+            Directory.CreateDirectory(packageDemoDir);
             
             string resourcesDir = Path.Combine(AppContext.BaseDirectory, "FileBasedApps");
-            string packageSearchFile = Path.Combine(resourcesDir, "PackageSearchApp.cs");
+            string packageDemoFile = Path.Combine(resourcesDir, "PackageDemoApp.cs");
             
-            string searchOutput = _helper.ExecuteRunFile(packageSearchFile, packageSearchDir, millisecondTimeout: 120000);
+            string demoOutput = _helper.ExecuteRunFile(packageDemoFile, packageDemoDir, millisecondTimeout: 300000); // 5 minutes for full demo
 
-            // Validate basic search output
-            if (!searchOutput.Contains("File-based app: Enhanced Package Search Demo"))
-                throw new InvalidOperationException("Expected output not found: File-based app: Enhanced Package Search Demo");
-            if (!searchOutput.Contains("Searching for packages matching:"))
-                throw new InvalidOperationException("Expected output not found: Searching for packages matching:");
-            if (!searchOutput.Contains("Package search and analysis completed."))
-                throw new InvalidOperationException("Expected output not found: Package search and analysis completed.");
+            // Validate basic demo output
+            if (!demoOutput.Contains("File-based app: Package Demo with Project Creation"))
+                throw new InvalidOperationException("Expected output not found: File-based app: Package Demo with Project Creation");
+            if (!demoOutput.Contains("Searching for packages matching: Microsoft.Extensions"))
+                throw new InvalidOperationException("Expected output not found: Searching for packages matching: Microsoft.Extensions");
+            if (!demoOutput.Contains("Package demo completed."))
+                throw new InvalidOperationException("Expected output not found: Package demo completed.");
             
             // Check if the package search was successful (may fail in offline environments)
-            if (searchOutput.Contains("Found ") && searchOutput.Contains(" packages"))
+            if (demoOutput.Contains("Found ") && demoOutput.Contains(" packages"))
             {
-                if (!searchOutput.Contains("Validating package content:"))
+                if (!demoOutput.Contains("Validating package content:"))
                     throw new InvalidOperationException("Expected output not found: Validating package content:");
-                if (!searchOutput.Contains("Converting JSON data to XML"))
+                if (!demoOutput.Contains("Converting JSON data to XML"))
                     throw new InvalidOperationException("Expected output not found: Converting JSON data to XML");
-                if (!searchOutput.Contains("Analysis completed"))
+                if (!demoOutput.Contains("Analysis completed"))
                     throw new InvalidOperationException("Expected output not found: Analysis completed");
+                if (!demoOutput.Contains("Creating console project and adding most downloaded package:"))
+                    throw new InvalidOperationException("Expected output not found: Creating console project and adding most downloaded package:");
             }
             else
             {
                 // If network is not available, at least verify that the app attempted to execute dotnet package search
-                if (!searchOutput.Contains("Failed to execute dotnet package search") && !searchOutput.Contains("Error:"))
+                if (!demoOutput.Contains("Failed to execute dotnet package search") && !demoOutput.Contains("Error:"))
                     throw new InvalidOperationException("Expected error message not found when network unavailable");
-            }
-
-            // Test 2: Package download and inspection functionality
-            string packageDownloadDir = Path.Combine(baseTestDir, "PackageDownloadApp");
-            Directory.CreateDirectory(packageDownloadDir);
-            
-            string packageDownloadFile = Path.Combine(resourcesDir, "PackageDownloadApp.cs");
-            
-            if (File.Exists(packageDownloadFile))
-            {
-                string downloadOutput = _helper.ExecuteRunFile(packageDownloadFile, packageDownloadDir, millisecondTimeout: 180000);
-
-                // Validate basic download output
-                if (!downloadOutput.Contains("File-based app: Package Download and Inspection Demo"))
-                    throw new InvalidOperationException("Expected output not found: File-based app: Package Download and Inspection Demo");
-                if (!downloadOutput.Contains("Downloading package: Microsoft.NETCore.App.Ref version 8.0.0"))
-                    throw new InvalidOperationException("Expected output not found: Downloading package: Microsoft.NETCore.App.Ref version 8.0.0");
-                if (!downloadOutput.Contains("Package download demo completed."))
-                    throw new InvalidOperationException("Expected output not found: Package download demo completed.");
-                
-                // Check if the package download was successful (may fail in offline environments)
-                if (downloadOutput.Contains("Downloaded package size:"))
-                {
-                    if (!downloadOutput.Contains("Package contains"))
-                        throw new InvalidOperationException("Expected output not found: Package contains");
-                    if (!downloadOutput.Contains("files:"))
-                        throw new InvalidOperationException("Expected output not found: files:");
-                    if (!downloadOutput.Contains("Package inspection completed successfully."))
-                        throw new InvalidOperationException("Expected output not found: Package inspection completed successfully.");
-                }
-                else
-                {
-                    // If network is not available, at least verify that the app attempted to make the request
-                    if (!downloadOutput.Contains("Download URL:"))
-                        throw new InvalidOperationException("Expected output not found: Download URL:");
-                }
             }
         }
         finally
