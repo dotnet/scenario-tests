@@ -54,7 +54,7 @@ Console.WriteLine($""Current time: {DateTime.Now}"");";
             string argsTestDir = Path.Combine(baseTestDir, "AppWithArgs");
             Directory.CreateDirectory(argsTestDir);
             
-            string resourcesDir = Path.Combine(AppContext.BaseDirectory, "resources", "FileBasedApps");
+            string resourcesDir = Path.Combine(AppContext.BaseDirectory, "FileBasedApps");
             string argsCsFile = Path.Combine(resourcesDir, "AppWithArgs.cs");
             string argsOutput = _helper.ExecuteRunFile(argsCsFile, argsTestDir);
             
@@ -134,7 +134,7 @@ class Program
             string packageSearchDir = Path.Combine(baseTestDir, "PackageSearchApp");
             Directory.CreateDirectory(packageSearchDir);
             
-            string resourcesDir = Path.Combine(AppContext.BaseDirectory, "resources", "FileBasedApps");
+            string resourcesDir = Path.Combine(AppContext.BaseDirectory, "FileBasedApps");
             string packageSearchFile = Path.Combine(resourcesDir, "PackageSearchApp.cs");
             
             string searchOutput = _helper.ExecuteRunFile(packageSearchFile, packageSearchDir, millisecondTimeout: 120000);
