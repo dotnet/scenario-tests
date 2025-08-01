@@ -29,6 +29,7 @@ public class FileBasedAppTests : IClassFixture<ScenarioTestFixture>
         // Comprehensive offline test that executes a wide swath of file-based app functionality
         string baseTestDir = Path.Combine(_scenarioTestInput.TestRoot, nameof(FileBasedAppTests));
         Directory.CreateDirectory(baseTestDir);
+        string resourcesDir = Path.Combine(AppContext.BaseDirectory, "FileBasedApps");
 
         try
         {
@@ -36,13 +37,9 @@ public class FileBasedAppTests : IClassFixture<ScenarioTestFixture>
             string simpleTestDir = Path.Combine(baseTestDir, "SimpleApp");
             Directory.CreateDirectory(simpleTestDir);
             
-            string csContent = @"using System;
-
-Console.WriteLine(""Hello World from file-based app!"");
-Console.WriteLine($""Current time: {DateTime.Now}"");";
-
-            string csFile = _helper.CreateCsFile("HelloWorld.cs", csContent, simpleTestDir);
-            string output = _helper.ExecuteRunFile(csFile, simpleTestDir);
+            string helloWorldResource = Path.Combine(resourcesDir, "HelloWorld.cs");
+            
+            string output = _helper.ExecuteRunFile(helloWorldResource, simpleTestDir);
             
             // Validate output contains expected strings
             if (!output.Contains("Hello World from file-based app!"))
@@ -54,7 +51,6 @@ Console.WriteLine($""Current time: {DateTime.Now}"");";
             string argsTestDir = Path.Combine(baseTestDir, "AppWithArgs");
             Directory.CreateDirectory(argsTestDir);
             
-            string resourcesDir = Path.Combine(AppContext.BaseDirectory, "FileBasedApps");
             string argsCsFile = Path.Combine(resourcesDir, "AppWithArgs.cs");
             string argsOutput = _helper.ExecuteRunFile(argsCsFile, argsTestDir);
             
