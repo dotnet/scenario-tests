@@ -35,7 +35,7 @@ internal class DotNetSdkHelper
     {
         if (!string.IsNullOrEmpty(SdkVersion) && !File.Exists(Path.Combine(workingDirectory, "global.json")))
         {
-            ExecuteCmdImpl($"new globaljson --sdk-version {SdkVersion}", workingDirectory, culture: culture);
+            ExecuteCmdImpl($"new globaljson --sdk-version {SdkVersion}", workingDirectory);
         }
 
         ExecuteCmdImpl(args, workingDirectory, additionalProcessConfigCallback, expectedExitCode, millisecondTimeout, culture);

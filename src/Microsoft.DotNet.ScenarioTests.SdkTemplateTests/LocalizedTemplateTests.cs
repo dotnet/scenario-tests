@@ -18,6 +18,30 @@ public class LocalizedTemplateTests : IClassFixture<ScenarioTestFixture>
     private readonly ScenarioTestFixture _scenarioTestInput;
     private readonly DotNetSdkHelper _sdkHelper;
 
+    /// <summary>
+    /// Supported .NET CLI locales based on SDK's localization support.
+    /// </summary>
+    private static readonly string[] SupportedCultures = new[]
+    {
+        "en-US",  // English (United States)
+        "de-DE",  // German (Germany)
+        "es-ES",  // Spanish (Spain)
+        "fr-FR",  // French (France)
+        "it-IT",  // Italian (Italy)
+        "ja-JP",  // Japanese (Japan)
+        "ko-KR",  // Korean (Korea)
+        "pt-BR",  // Portuguese (Brazil)
+        "ru-RU",  // Russian (Russia)
+        "tr-TR",  // Turkish (Turkey)
+        "zh-CN",  // Chinese (Simplified, China)
+        "zh-TW",  // Chinese (Traditional, Taiwan)
+    };
+
+    /// <summary>
+    /// All supported programming languages in .NET.
+    /// </summary>
+    private static readonly DotNetLanguage[] AllLanguages = Enum.GetValues<DotNetLanguage>();
+
     public LocalizedTemplateTests(ScenarioTestFixture testInput, ITestOutputHelper outputHelper)
     {
         if (string.IsNullOrEmpty(testInput.DotNetRoot))
@@ -85,11 +109,10 @@ public class LocalizedTemplateTests : IClassFixture<ScenarioTestFixture>
     /// </summary>
     public static IEnumerable<object[]> GetLocaleAndTemplateData()
     {
-        var cultures = GetSupportedCultures();
         var coreTemplates = new[] { DotNetSdkTemplate.Console, DotNetSdkTemplate.ClassLib };
         var languages = new[] { DotNetLanguage.CSharp }; // Start with C# for broad locale coverage
 
-        foreach (var culture in cultures)
+        foreach (var culture in SupportedCultures)
         {
             foreach (var template in coreTemplates)
             {
@@ -107,39 +130,13 @@ public class LocalizedTemplateTests : IClassFixture<ScenarioTestFixture>
     /// </summary>
     public static IEnumerable<object[]> GetCoreTemplatesWithLocales()
     {
-        var cultures = GetSupportedCultures();
-        var languages = Enum.GetValues<DotNetLanguage>();
-
-        foreach (var culture in cultures)
+        foreach (var culture in SupportedCultures)
         {
-            foreach (var language in languages)
+            foreach (var language in AllLanguages)
             {
                 yield return new object[] { culture, language };
             }
         }
-    }
-
-    /// <summary>
-    /// Returns a representative set of supported .NET CLI locales.
-    /// Based on the SDK's localization support which includes major world languages.
-    /// </summary>
-    private static IEnumerable<string> GetSupportedCultures()
-    {
-        return new[]
-        {
-            "en-US",  // English (United States)
-            "de-DE",  // German (Germany)
-            "es-ES",  // Spanish (Spain)
-            "fr-FR",  // French (France)
-            "it-IT",  // Italian (Italy)
-            "ja-JP",  // Japanese (Japan)
-            "ko-KR",  // Korean (Korea)
-            "pt-BR",  // Portuguese (Brazil)
-            "ru-RU",  // Russian (Russia)
-            "tr-TR",  // Turkish (Turkey)
-            "zh-CN",  // Chinese (Simplified, China)
-            "zh-TW",  // Chinese (Traditional, Taiwan)
-        };
     }
 
     /// <summary>
