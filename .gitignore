@@ -14,4 +14,4 @@ msbuild.binlog
 .vs/
 
 # Debugger launch settings
-launchSettings.json
+launchSettings.json.nuget/
