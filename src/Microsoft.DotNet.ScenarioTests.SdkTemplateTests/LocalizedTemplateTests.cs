@@ -64,16 +64,13 @@ public class LocalizedTemplateTests : IClassFixture<ScenarioTestFixture>
         
         Directory.CreateDirectory(projectDirectory);
 
-        // Add --no-https for ASP.NET Core templates on macOS
-        string customArgs = template.IsAspNetCore() && _scenarioTestInput.TargetRid.Contains("osx") ? "--no-https" : string.Empty;
-
         // Instantiate the template with the specified culture
         _sdkHelper.ExecuteNew(
             template.GetName(), 
             projectName, 
             projectDirectory, 
             language.ToCliName(),
-            customArgs: customArgs,
+            customArgs: null,
             culture: culture);
 
         // Verify the template was created successfully by building it
