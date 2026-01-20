@@ -64,13 +64,16 @@ public class LocalizedTemplateTests : IClassFixture<ScenarioTestFixture>
         
         Directory.CreateDirectory(projectDirectory);
 
+        // Add --no-https for ASP.NET Core templates on macOS
+        string customArgs = template.IsAspNetCore() && _scenarioTestInput.TargetRid.Contains("osx") ? "--no-https" : string.Empty;
+
         // Instantiate the template with the specified culture
         _sdkHelper.ExecuteNew(
             template.GetName(), 
             projectName, 
             projectDirectory, 
             language.ToCliName(),
-            customArgs: null,
+            customArgs: customArgs,
             culture: culture);
 
         // Verify the template was created successfully by building it
@@ -104,12 +107,20 @@ public class LocalizedTemplateTests : IClassFixture<ScenarioTestFixture>
     }
 
     /// <summary>
-    /// Gets test data combining locales with core templates (console, classlib).
+    /// Gets test data combining locales with core templates (console, classlib) and ASP.NET Core templates.
     /// This provides broad coverage of template instantiation across different cultures.
+    /// ASP.NET Core templates (Web, Mvc, WebApi, Razor) are included as they don't come directly from the SDK.
     /// </summary>
     public static IEnumerable<object[]> GetLocaleAndTemplateData()
     {
-        var coreTemplates = new[] { DotNetSdkTemplate.Console, DotNetSdkTemplate.ClassLib };
+        var coreTemplates = new[] { 
+            DotNetSdkTemplate.Console, 
+            DotNetSdkTemplate.ClassLib,
+            DotNetSdkTemplate.Web,
+            DotNetSdkTemplate.Mvc,
+            DotNetSdkTemplate.WebApi,
+            DotNetSdkTemplate.Razor
+        };
         var languages = new[] { DotNetLanguage.CSharp }; // Start with C# for broad locale coverage
 
         foreach (var culture in SupportedCultures)
