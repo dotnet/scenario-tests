@@ -23,4 +23,6 @@ public enum DotNetSdkTemplate
     Wpf,
     Winforms,
     Aspire,
+    maui,
+    maccatalyst
 }
