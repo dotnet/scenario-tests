@@ -310,9 +310,10 @@ internal partial class DotNetSdkHelper
         if (useMicrosoftTestingPlatform)
         {
             // On the .NET 10+ SDK the VSTest bridge was removed from Microsoft.Testing.Platform, so
-            // `dotnet test` has to run in its dedicated MTP mode. That mode is opted into via global.json.
-            EnableTestingPlatformRunner(projectDirectory);
-
+            // `dotnet test` has to run in its dedicated MTP mode. That mode is opted into via a global.json
+            // that EnableTestingPlatformRunner writes before `dotnet new` (see its remarks for why the
+            // ordering matters).
+            //
             // MTP mode uses --coverage (Microsoft.Testing.Extensions.CodeCoverage) rather than the VSTest
             // --collect data collector. Unknown switches are forwarded to the test app, so only MTP options
             // are passed here (notably no --nologo, which the app rejects with "Zero tests ran").
@@ -360,11 +361,18 @@ internal partial class DotNetSdkHelper
     }
 
     /// <summary>
-    /// Opts the project into the Microsoft.Testing.Platform mode of <c>dotnet test</c> by merging
-    /// <c>"test": { "runner": "Microsoft.Testing.Platform" }</c> into any existing global.json. Merging
-    /// preserves an SDK version pin that <see cref="ExecuteCmd"/> may already have written.
+    /// Opts a generated project into the Microsoft.Testing.Platform mode of <c>dotnet test</c> by merging
+    /// <c>"test": { "runner": "Microsoft.Testing.Platform" }</c> into a global.json in the project directory,
+    /// preserving any keys already present (for example an SDK version pin).
     /// </summary>
-    private static void EnableTestingPlatformRunner(string projectDirectory)
+    /// <remarks>
+    /// This MUST be called before <c>dotnet new ... --test-runner Microsoft.Testing.Platform</c>. That
+    /// template switch opts in by <em>modifying the nearest global.json</em> it finds walking up from the
+    /// output directory. With no local global.json it rewrites the repo-root one that every generated test
+    /// project shares, which forces the sibling VSTest template tests into MTP mode and breaks them. Writing
+    /// the local file first keeps the template's modification scoped to this project.
+    /// </remarks>
+    public static void EnableTestingPlatformRunner(string projectDirectory)
     {
         string globalJsonPath = Path.Combine(projectDirectory, "global.json");
         JsonObject root = File.Exists(globalJsonPath)

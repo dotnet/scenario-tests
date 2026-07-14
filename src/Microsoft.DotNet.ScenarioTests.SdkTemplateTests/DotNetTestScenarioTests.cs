@@ -62,6 +62,15 @@ public class DotNetTestScenarioTests : IClassFixture<ScenarioTestFixture>
 
         Directory.CreateDirectory(projectDirectory);
 
+        if (useMicrosoftTestingPlatform)
+        {
+            // Anchor a local global.json before generating. The mstest template's
+            // --test-runner Microsoft.Testing.Platform switch opts in by modifying the nearest global.json
+            // it finds; without a local one it rewrites the shared repo-root global.json and breaks every
+            // other generated test project. See DotNetSdkHelper.EnableTestingPlatformRunner.
+            DotNetSdkHelper.EnableTestingPlatformRunner(projectDirectory);
+        }
+
         // Generate a coherent MSTest project via the template's first-class switches (no csproj hand-editing):
         //   --test-runner selects VSTest vs Microsoft.Testing.Platform,
         //   --coverage-tool pins Microsoft.CodeCoverage so both runners collect coverage,
