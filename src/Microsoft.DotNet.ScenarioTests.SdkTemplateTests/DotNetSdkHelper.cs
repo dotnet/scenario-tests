@@ -306,6 +306,20 @@ internal partial class DotNetSdkHelper
     {
         string resultsDirectory = Path.Combine(projectDirectory, "TestResults");
 
+        // A hung `dotnet test` here used to run until the CI job's outer task timeout (30 min) hard-killed
+        // the whole process tree. That produced no dump and left the scenario binlog unfinalized, so the
+        // hang surfaced only as a silent task timeout with nothing to debug. Guard against it with two
+        // layered timeouts, both comfortably below the outer task timeout so one of them always fires first:
+        //   1. hangDumpTimeout - the test runner detects the hang and captures a dump of the stuck test host
+        //      (and a sequence file naming the in-flight test) into the results directory before it
+        //      self-terminates. Wired up for VSTest via --blame-hang below; the MTP path needs the
+        //      Microsoft.Testing.Extensions.HangDump package and is tracked as a follow-up.
+        //   2. executionTimeout - a runner-agnostic backstop in ExecuteHelper.ExecuteProcess that kills the
+        //      process tree and fails this scenario with an attributed timeout message if the runner's own
+        //      hang handling never kicks in (for example the MTP path today).
+        TimeSpan hangDumpTimeout = TimeSpan.FromMinutes(10);
+        TimeSpan executionTimeout = TimeSpan.FromMinutes(15);
+
         string coverageArgs;
         if (useMicrosoftTestingPlatform)
         {
@@ -316,17 +330,26 @@ internal partial class DotNetSdkHelper
             //
             // MTP mode uses --coverage (Microsoft.Testing.Extensions.CodeCoverage) rather than the VSTest
             // --collect data collector. Unknown switches are forwarded to the test app, so only MTP options
-            // are passed here (notably no --nologo, which the app rejects with "Zero tests ran").
+            // are passed here (notably no --nologo, which the app rejects with "Zero tests ran"). A native
+            // MTP hang dump (--hangdump) would need the Microsoft.Testing.Extensions.HangDump package to be
+            // referenced by the generated project; until then this path relies on executionTimeout below.
             coverageArgs = "--coverage --coverage-output-format cobertura --coverage-output coverage.cobertura.xml";
         }
         else
         {
-            coverageArgs = "--collect \"Code Coverage\"";
+            // --collect "Code Coverage" runs under VSTest. --blame-hang makes the VSTest host self-monitor
+            // and, if a test exceeds the timeout, write a full hang dump plus a Sequence.xml naming the
+            // in-flight test into --results-directory before aborting -- so an intermittent hang leaves a
+            // diagnosable artifact instead of a silent kill.
+            coverageArgs =
+                $"--collect \"Code Coverage\" --blame-hang --blame-hang-timeout {(int)hangDumpTimeout.TotalMinutes}m " +
+                "--blame-hang-dump-type full";
         }
 
         ExecuteCmd(
             $"test {coverageArgs} --results-directory \"{resultsDirectory}\" {GetBinLogOption(projectDirectory, "test")}",
-            workingDirectory: projectDirectory);
+            workingDirectory: projectDirectory,
+            millisecondTimeout: (int)executionTimeout.TotalMilliseconds);
 
         IReadOnlyList<string> coverageFiles = FindCoverageFiles(resultsDirectory);
         if (coverageFiles.Count == 0)
